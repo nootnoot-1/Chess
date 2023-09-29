@@ -1,8 +1,11 @@
 package chess;
 
+import java.util.Map;
+
 public class BoardImpl implements ChessBoard{
 
     private ChessPiece[] board = new ChessPiece[63];
+    private Map<PositionImpl,ChessPiece> board2;
 
     @Override
     public void addPiece(ChessPosition position, ChessPiece piece) {
