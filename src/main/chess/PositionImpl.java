@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Objects;
+
 public class PositionImpl implements ChessPosition{
     private final int row;
     private final int column;
@@ -19,7 +21,23 @@ public class PositionImpl implements ChessPosition{
         return column;
     }
 
-    public int getIndex() {
-        return ((row-1)*8 + column - 1);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PositionImpl position)) return false;
+        return row == position.row && column == position.column;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(row, column);
+    }
+
+    @Override
+    public String toString() {
+        return "PositionImpl{" +
+                "row=" + row +
+                ", column=" + column +
+                '}';
     }
 }

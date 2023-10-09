@@ -3,11 +3,9 @@ package chess;
 import java.util.Collection;
 
 public class PawnImpl implements ChessPiece{
-    PositionImpl position;
     ChessGame.TeamColor teamColor;
 
-    public PawnImpl(ChessGame.TeamColor color, int row, int column) {
-        position = new PositionImpl(row, column);
+    public PawnImpl(ChessGame.TeamColor color) {
         teamColor = color;
     }
 

@@ -20,17 +20,33 @@ public class TestFactory {
     }
 
     public static ChessPiece getNewPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type){
-        // FIXME
-        ChessPiece piece;
-		return null;
+        if (type == ChessPiece.PieceType.ROOK) {
+            return new RookImpl(pieceColor);
+        }
+        if (type == ChessPiece.PieceType.QUEEN) {
+            return new QueenImpl(pieceColor);
+        }
+        if (type == ChessPiece.PieceType.PAWN) {
+            return new PawnImpl(pieceColor);
+        }
+        if (type == ChessPiece.PieceType.KNIGHT) {
+            return new KnightImpl(pieceColor);
+        }
+        if (type == ChessPiece.PieceType.KING) {
+            return new KingImpl(pieceColor);
+        }
+        if (type == ChessPiece.PieceType.BISHOP) {
+            return new BishopImpl(pieceColor);
+        }
+        return null;
     }
 
     public static ChessPosition getNewPosition(Integer row, Integer col){
-		return new PositionImpl(row,col);
+        return new PositionImpl(row,col);
     }
 
     public static ChessMove getNewMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece){
-		return new MoveImpl((PositionImpl) startPosition, (PositionImpl) endPosition);
+		return new MoveImpl((PositionImpl) startPosition, (PositionImpl) endPosition, promotionPiece);
     }
     //------------------------------------------------------------------------------------------------------------------
 
