@@ -1,7 +1,8 @@
 package chess;
 
 import java.util.Collection;
-
+import java.util.Map;
+//TODO: The issue is that I am testing if I can move a rook while I am in check, which I should not be able to do, but for some reason the test passes, but the rook also moves.
 public class GameImpl implements ChessGame{
     TeamColor teamturn = TeamColor.WHITE;
     BoardImpl board = new BoardImpl();
@@ -26,11 +27,11 @@ public class GameImpl implements ChessGame{
 
     @Override
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if (teamturn != board.getPiece(move.getStartPosition()).getTeamColor()) {
-            throw new InvalidMoveException("not your turn");
-        }
+        BoardImpl oldBoard = copyBoard(board);
         Collection<ChessMove> moves = board.getPiece(move.getStartPosition()).pieceMoves(board,move.getStartPosition());
         if (!moves.contains(move)) {
+            throw new InvalidMoveException();
+        } else if (teamturn != board.getPiece(move.getStartPosition()).getTeamColor()) {
             throw new InvalidMoveException();
         } else {
             if (board.getPiece(move.getEndPosition()) == null) {
@@ -41,21 +42,26 @@ public class GameImpl implements ChessGame{
                     if (move.getPromotionPiece() == ChessPiece.PieceType.QUEEN) {
                         QueenImpl queen = new QueenImpl(teamturn);
                         board.addPiece(move.getEndPosition(), queen);
+                        board.removePiece(move.getStartPosition());
                     }
                     if (move.getPromotionPiece() == ChessPiece.PieceType.ROOK) {
                         RookImpl rook = new RookImpl(teamturn);
                         board.addPiece(move.getEndPosition(), rook);
+                        board.removePiece(move.getStartPosition());
                     }
                     if (move.getPromotionPiece() == ChessPiece.PieceType.BISHOP) {
                         BishopImpl bishop = new BishopImpl(teamturn);
                         board.addPiece(move.getEndPosition(), bishop);
+                        board.removePiece(move.getStartPosition());
                     }
                     if (move.getPromotionPiece() == ChessPiece.PieceType.KNIGHT) {
                         KnightImpl knight = new KnightImpl(teamturn);
                         board.addPiece(move.getEndPosition(), knight);
-                    } else {
-                        throw new InvalidMoveException();
+                        board.removePiece(move.getStartPosition());
                     }
+//                    else {
+//                        throw new InvalidMoveException();
+//                    }
                 }
             } else {
                 board.removePiece(move.getEndPosition());
@@ -84,6 +90,12 @@ public class GameImpl implements ChessGame{
                 board.removePiece(move.getStartPosition());
             }
         }
+
+        if (isInCheck(teamturn)) {
+            board = oldBoard;
+            throw new InvalidMoveException();
+        }
+
         if (teamturn == TeamColor.WHITE) {
             setTeamTurn(TeamColor.BLACK);
         } else {
@@ -93,7 +105,7 @@ public class GameImpl implements ChessGame{
 
     @Override
     public boolean isInCheck(TeamColor teamColor) {
-        return false;
+        return board.inCheck(teamColor);
     }
 
     @Override
@@ -114,5 +126,20 @@ public class GameImpl implements ChessGame{
     @Override
     public ChessBoard getBoard() {
         return board;
+    }
+
+    private BoardImpl copyBoard(BoardImpl boardtc) {
+        BoardImpl copyBoard = new BoardImpl();
+
+        for (int i = 8; i > 0; --i) {
+            for (int j = 1; j < 9; ++j) {
+                PositionImpl position = new PositionImpl(i,j);
+                if (boardtc.getPiece(position) != null) {
+                    copyBoard.addPiece(position, boardtc.getPiece(position));
+                }
+            }
+        }
+
+        return copyBoard;
     }
 }

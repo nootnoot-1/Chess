@@ -1,7 +1,5 @@
 package chess;
 
-import org.junit.jupiter.api.Assertions;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +13,47 @@ public class BoardImpl implements ChessBoard{
     }
 
     public void removePiece(ChessPosition position) {board.remove(position);}
+
+    public PositionImpl findKing(ChessGame.TeamColor teamColor) {
+        for (Map.Entry<PositionImpl, ChessPiece> it : board.entrySet()) {
+            if (it.getValue().getPieceType() == ChessPiece.PieceType.KING && it.getValue().getTeamColor() == teamColor) {
+                return it.getKey();
+            }
+        }
+        return null;
+    }
+
+    public boolean inCheck(ChessGame.TeamColor teamColor) {
+        PositionImpl kingPosition = findKing(teamColor);
+        if (teamColor == ChessGame.TeamColor.WHITE) {
+            for (Map.Entry<PositionImpl, ChessPiece> piece : board.entrySet()) {
+                if (piece.getValue().getTeamColor() == ChessGame.TeamColor.BLACK) {
+                    Collection<ChessMove> moves = piece.getValue().pieceMoves(this, piece.getKey());
+                    for (ChessMove move : moves) {
+                        if (kingPosition != null) {
+                            if (move.getEndPosition().getRow() == kingPosition.getRow() && move.getEndPosition().getColumn() == kingPosition.getColumn()) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            for (Map.Entry<PositionImpl, ChessPiece> piece : board.entrySet()) {
+                if (piece.getValue().getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    Collection<ChessMove> moves = piece.getValue().pieceMoves(this, piece.getKey());
+                    for (ChessMove move : moves) {
+                        if (kingPosition != null) {
+                            if (move.getEndPosition().getRow() == kingPosition.getRow() && move.getEndPosition().getColumn() == kingPosition.getColumn()) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     @Override
     public ChessPiece getPiece(ChessPosition position) {
@@ -89,6 +128,68 @@ public class BoardImpl implements ChessBoard{
         PositionImpl kingwp = new PositionImpl(8,5);
         addPiece(kingwp, kingWhite);
     }
+    @Override
+    public String toString(){
+        StringBuilder string = new StringBuilder();
+        for (int i = 8; i > 0; --i) {
+            for (int j = 1; j < 9; ++j) {
+                PositionImpl position = new PositionImpl(i,j);
+                if (board.containsKey(position)) {
+                    string.append("|");
+                    string.append(toStringHelper(board.get(position).getPieceType(), board.get(position).getTeamColor()));
+                    string.append("|");
+                } else {
+                    string.append("| |");
+                }
+            }
+            string.append("\n");
+        }
+        return string.toString();
+    }
 
-
+    private String toStringHelper(ChessPiece.PieceType type, ChessGame.TeamColor color) {
+        if (type == ChessPiece.PieceType.KING) {
+            if (color == ChessGame.TeamColor.WHITE) {
+                return "K";
+            } else {
+                return "k";
+            }
+        }
+        if (type == ChessPiece.PieceType.QUEEN) {
+            if (color == ChessGame.TeamColor.WHITE) {
+                return "Q";
+            } else {
+                return "q";
+            }
+        }
+        if (type == ChessPiece.PieceType.BISHOP) {
+            if (color == ChessGame.TeamColor.WHITE) {
+                return "B";
+            } else {
+                return "b";
+            }
+        }
+        if (type == ChessPiece.PieceType.KNIGHT) {
+            if (color == ChessGame.TeamColor.WHITE) {
+                return "N";
+            } else {
+                return "n";
+            }
+        }
+        if (type == ChessPiece.PieceType.ROOK) {
+            if (color == ChessGame.TeamColor.WHITE) {
+                return "R";
+            } else {
+                return "r";
+            }
+        }
+        if (type == ChessPiece.PieceType.PAWN) {
+            if (color == ChessGame.TeamColor.WHITE) {
+                return "P";
+            } else {
+                return "p";
+            }
+        }
+        return "x";
+    }
 }
