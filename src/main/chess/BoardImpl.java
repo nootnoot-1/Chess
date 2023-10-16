@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class BoardImpl implements ChessBoard{
@@ -191,5 +192,23 @@ public class BoardImpl implements ChessBoard{
             }
         }
         return "x";
+    }
+
+    public Collection<ChessMove> getAllMoves(ChessGame.TeamColor teamColor) {
+        Collection<ChessMove> moves = new HashSet<>();
+        if (teamColor == ChessGame.TeamColor.WHITE) {
+            for (Map.Entry<PositionImpl, ChessPiece> it : board.entrySet()) {
+                if (it.getValue().getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    moves.addAll(it.getValue().pieceMoves(this,it.getKey()));
+                }
+            }
+        } else {
+            for (Map.Entry<PositionImpl, ChessPiece> it : board.entrySet()) {
+                if (it.getValue().getTeamColor() == ChessGame.TeamColor.BLACK) {
+                    moves.addAll(it.getValue().pieceMoves(this,it.getKey()));
+                }
+            }
+        }
+        return moves;
     }
 }

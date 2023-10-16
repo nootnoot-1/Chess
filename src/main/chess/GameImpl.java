@@ -1,11 +1,12 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 //TODO: The issue is that I am testing if I can move a rook while I am in check, which I should not be able to do, but for some reason the test passes, but the rook also moves.
 public class GameImpl implements ChessGame{
     TeamColor teamturn = TeamColor.WHITE;
-    BoardImpl board = new BoardImpl();
+    BoardImpl gameBoard = new BoardImpl();
     @Override
     public TeamColor getTeamTurn() {
         return teamturn;
@@ -18,76 +19,85 @@ public class GameImpl implements ChessGame{
 
     @Override
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        if (board.getPiece(startPosition) == null) {
+        if (gameBoard.getPiece(startPosition) == null) {
             return null;
-        } else {
-            return board.getPiece(startPosition).pieceMoves(board,startPosition);
         }
+        Collection<ChessMove> moves = gameBoard.getPiece(startPosition).pieceMoves(gameBoard,startPosition);
+        Collection<ChessMove> safeMoves = new HashSet<>();
+
+        for (ChessMove move : moves) {
+            BoardImpl board = copyBoard(gameBoard);
+            secureMove(move, board, gameBoard.getPiece(startPosition).getTeamColor());
+            if (!board.inCheck(gameBoard.getPiece(startPosition).getTeamColor())) {
+                safeMoves.add(move);
+            }
+        }
+
+        return safeMoves;
     }
 
     @Override
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        BoardImpl oldBoard = copyBoard(board);
-        Collection<ChessMove> moves = board.getPiece(move.getStartPosition()).pieceMoves(board,move.getStartPosition());
+        BoardImpl oldBoard = copyBoard(gameBoard);
+        Collection<ChessMove> moves = gameBoard.getPiece(move.getStartPosition()).pieceMoves(gameBoard,move.getStartPosition());
         if (!moves.contains(move)) {
             throw new InvalidMoveException();
-        } else if (teamturn != board.getPiece(move.getStartPosition()).getTeamColor()) {
+        } else if (teamturn != gameBoard.getPiece(move.getStartPosition()).getTeamColor()) {
             throw new InvalidMoveException();
         }
-        if (board.getPiece(move.getEndPosition()) == null) {
+        if (gameBoard.getPiece(move.getEndPosition()) == null) {
             if (move.getPromotionPiece() == null) {
-                board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
-                board.removePiece(move.getStartPosition());
+                gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
+                gameBoard.removePiece(move.getStartPosition());
             } else {
                 if (move.getPromotionPiece() == ChessPiece.PieceType.QUEEN) {
                     QueenImpl queen = new QueenImpl(teamturn);
-                    board.addPiece(move.getEndPosition(), queen);
-                    board.removePiece(move.getStartPosition());
+                    gameBoard.addPiece(move.getEndPosition(), queen);
+                    gameBoard.removePiece(move.getStartPosition());
                 }
                 if (move.getPromotionPiece() == ChessPiece.PieceType.ROOK) {
                     RookImpl rook = new RookImpl(teamturn);
-                    board.addPiece(move.getEndPosition(), rook);
-                    board.removePiece(move.getStartPosition());
+                    gameBoard.addPiece(move.getEndPosition(), rook);
+                    gameBoard.removePiece(move.getStartPosition());
                 }
                 if (move.getPromotionPiece() == ChessPiece.PieceType.BISHOP) {
                     BishopImpl bishop = new BishopImpl(teamturn);
-                    board.addPiece(move.getEndPosition(), bishop);
-                    board.removePiece(move.getStartPosition());
+                    gameBoard.addPiece(move.getEndPosition(), bishop);
+                    gameBoard.removePiece(move.getStartPosition());
                 }
                 if (move.getPromotionPiece() == ChessPiece.PieceType.KNIGHT) {
                     KnightImpl knight = new KnightImpl(teamturn);
-                    board.addPiece(move.getEndPosition(), knight);
-                    board.removePiece(move.getStartPosition());
+                    gameBoard.addPiece(move.getEndPosition(), knight);
+                    gameBoard.removePiece(move.getStartPosition());
                 }
             }
         } else {
-            board.removePiece(move.getEndPosition());
+            gameBoard.removePiece(move.getEndPosition());
             if (move.getPromotionPiece() == null) {
-                board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+                gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
             } else {
                 if (move.getPromotionPiece() == ChessPiece.PieceType.QUEEN) {
                     QueenImpl queen = new QueenImpl(teamturn);
-                    board.addPiece(move.getEndPosition(), queen);
+                    gameBoard.addPiece(move.getEndPosition(), queen);
                 }
                 if (move.getPromotionPiece() == ChessPiece.PieceType.ROOK) {
                     RookImpl rook = new RookImpl(teamturn);
-                    board.addPiece(move.getEndPosition(), rook);
+                    gameBoard.addPiece(move.getEndPosition(), rook);
                 }
                 if (move.getPromotionPiece() == ChessPiece.PieceType.BISHOP) {
                     BishopImpl bishop = new BishopImpl(teamturn);
-                    board.addPiece(move.getEndPosition(), bishop);
+                    gameBoard.addPiece(move.getEndPosition(), bishop);
                 }
                 if (move.getPromotionPiece() == ChessPiece.PieceType.KNIGHT) {
                     KnightImpl knight = new KnightImpl(teamturn);
-                    board.addPiece(move.getEndPosition(), knight);
+                    gameBoard.addPiece(move.getEndPosition(), knight);
                 }
             }
-            board.removePiece(move.getStartPosition());
+            gameBoard.removePiece(move.getStartPosition());
         }
 
-
         if (isInCheck(teamturn)) {
-            board = oldBoard;
+            gameBoard = oldBoard;
             throw new InvalidMoveException();
         }
 
@@ -98,30 +108,90 @@ public class GameImpl implements ChessGame{
         }
     }
 
+    private void secureMove(ChessMove move, BoardImpl board, TeamColor color) {
+        if (board.getPiece(move.getEndPosition()) == null) {
+            if (move.getPromotionPiece() == null) {
+                board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+                board.removePiece(move.getStartPosition());
+            } else {
+                if (move.getPromotionPiece() == ChessPiece.PieceType.QUEEN) {
+                    QueenImpl queen = new QueenImpl(color);
+                    board.addPiece(move.getEndPosition(), queen);
+                    board.removePiece(move.getStartPosition());
+                }
+                if (move.getPromotionPiece() == ChessPiece.PieceType.ROOK) {
+                    RookImpl rook = new RookImpl(color);
+                    board.addPiece(move.getEndPosition(), rook);
+                    board.removePiece(move.getStartPosition());
+                }
+                if (move.getPromotionPiece() == ChessPiece.PieceType.BISHOP) {
+                    BishopImpl bishop = new BishopImpl(color);
+                    board.addPiece(move.getEndPosition(), bishop);
+                    board.removePiece(move.getStartPosition());
+                }
+                if (move.getPromotionPiece() == ChessPiece.PieceType.KNIGHT) {
+                    KnightImpl knight = new KnightImpl(color);
+                    board.addPiece(move.getEndPosition(), knight);
+                    board.removePiece(move.getStartPosition());
+                }
+            }
+        } else {
+            board.removePiece(move.getEndPosition());
+            if (move.getPromotionPiece() == null) {
+                board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+            } else {
+                if (move.getPromotionPiece() == ChessPiece.PieceType.QUEEN) {
+                    QueenImpl queen = new QueenImpl(color);
+                    board.addPiece(move.getEndPosition(), queen);
+                }
+                if (move.getPromotionPiece() == ChessPiece.PieceType.ROOK) {
+                    RookImpl rook = new RookImpl(color);
+                    board.addPiece(move.getEndPosition(), rook);
+                }
+                if (move.getPromotionPiece() == ChessPiece.PieceType.BISHOP) {
+                    BishopImpl bishop = new BishopImpl(color);
+                    board.addPiece(move.getEndPosition(), bishop);
+                }
+                if (move.getPromotionPiece() == ChessPiece.PieceType.KNIGHT) {
+                    KnightImpl knight = new KnightImpl(color);
+                    board.addPiece(move.getEndPosition(), knight);
+                }
+            }
+            board.removePiece(move.getStartPosition());
+        }
+    }
+
     @Override
     public boolean isInCheck(TeamColor teamColor) {
-        return board.inCheck(teamColor);
+        return gameBoard.inCheck(teamColor);
     }
 
     @Override
     public boolean isInCheckmate(TeamColor teamColor) {
-        return false;
+        Collection<ChessMove> moves = gameBoard.getAllMoves(teamColor);
+        for (ChessMove move : moves) {
+            BoardImpl board = copyBoard(gameBoard);
+            secureMove(move, board, teamColor);
+            if (!board.inCheck(teamColor)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean isInStalemate(TeamColor teamColor) {
-        PositionImpl kingPosition = board.findKing(teamColor);
-        return board.getPiece(kingPosition).pieceMoves(board, kingPosition).isEmpty();
+        return isInCheckmate(teamColor);
     }
 
     @Override
     public void setBoard(ChessBoard board1) {
-         board = (BoardImpl) board1;
+         gameBoard = (BoardImpl) board1;
     }
 
     @Override
     public ChessBoard getBoard() {
-        return board;
+        return gameBoard;
     }
 
     private BoardImpl copyBoard(BoardImpl boardtc) {
