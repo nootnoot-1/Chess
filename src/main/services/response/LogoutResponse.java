@@ -1,19 +1,19 @@
 package services.response;
 
-/*
+/**
 Response class for the Logout service
  */
 public class LogoutResponse {
-    /*
+    /**
     message for any errors that occur
      */
     private String message;
-    /*
+    /**
     authToken to verify user
      */
     private String authToken;
 
-    /*
+    /**
     Logout class constructor
      */
     public LogoutResponse() {}

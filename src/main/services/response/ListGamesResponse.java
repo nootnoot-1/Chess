@@ -4,20 +4,20 @@ import models.Game;
 
 import java.util.Collection;
 
-/*
+/**
 Response class for the ListGames service
  */
 public class ListGamesResponse {
-    /*
+    /**
     authToken to verify user
      */
     private String authToken;
-    /*
+    /**
     collection of games that are to be listed
      */
     private Collection<Game> games;
 
-    /*
+    /**
     ListGamesResponse class constructor
      */
     public ListGamesResponse() {}

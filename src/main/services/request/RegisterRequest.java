@@ -1,23 +1,23 @@
 package services.request;
 
-/*
+/**
 Request class for the Register service
  */
 public class RegisterRequest {
-    /*
+    /**
     user provided string to identify user
      */
     private String username;
-    /*
+    /**
     user provided string to verify user
      */
     private String password;
-    /*
+    /**
     user provided email
      */
     private String email;
 
-    /*
+    /**
     RegisterRequest class constructor
      */
     public RegisterRequest() {}

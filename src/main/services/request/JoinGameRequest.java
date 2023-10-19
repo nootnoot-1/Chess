@@ -1,19 +1,19 @@
 package services.request;
 
-/*
+/**
 Request class for the JoinGame service
  */
 public class JoinGameRequest {
-    /*
+    /**
     string to determine what color the player will join as
      */
     private String playerColor;
-    /*
+    /**
     int to identify the game that is being joined
      */
     private int gameID;
 
-    /*
+    /**
     JoinGameRequest class constructor
      */
     public JoinGameRequest() {}

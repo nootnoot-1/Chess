@@ -2,32 +2,32 @@ package models;
 
 import chess.GameImpl;
 
-/*
+/**
 Model class for Games, contains all necessary information a server will need to know about a specific game
  */
 public class Game {
-    /*
+    /**
     numerical identifier for specific game
      */
     private int gameID;
-    /*
+    /**
     Username for the player playing white in this specific game
      */
     private String whiteUsername;
-    /*
+    /**
     Username for the player playing black in this specific game
      */
     private String blackUsername;
-    /*
+    /**
     String identifier for specific game
      */
     private String gameName;
-    /*
+    /**
     Game implementation object
      */
     private GameImpl game;
 
-    /*
+    /**
     Constructor for game class
      */
     public Game() {}

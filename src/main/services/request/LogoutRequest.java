@@ -1,15 +1,15 @@
 package services.request;
 
-/*
+/**
 Request class for the Logout service
  */
 public class LogoutRequest {
-    /*
+    /**
     authToken to verify user
      */
     private String authToken;
 
-    /*
+    /**
     Logout class constructor
      */
     public LogoutRequest() {}

@@ -1,27 +1,27 @@
 package services.response;
 
-/*
+/**
 Response class for the Create Game service
  */
 public class CreateGameResponse {
-    /*
+    /**
     message for any errors that occur
      */
     private String message;
-    /*
+    /**
     String to name the game
      */
     private String gameName;
-    /*
+    /**
     authToken to verify user
      */
     private String authToken;
-    /*
+    /**
     int used to indentify specific game
      */
     private int gameID;
 
-    /*
+    /**
     Constructor for the CreateGameResponse class
      */
     public CreateGameResponse() {}
