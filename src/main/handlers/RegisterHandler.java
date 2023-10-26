@@ -1,4 +1,40 @@
 package handlers;
 
+
+import com.google.gson.Gson;
+import dataAccess.AuthDAO;
+import dataAccess.UserDAO;
+import services.RegisterService;
+import services.request.RegisterRequest;
+import services.response.RegisterResponse;
+import spark.Request;
+import spark.Response;
+
+import java.util.Objects;
+
 public class RegisterHandler {
+
+    public String handleRequest(Request request, Response response) {
+        RegisterService registerService = new RegisterService();
+        Gson gson = new Gson();
+
+        //registerRequest = gson converted HTTP request
+        RegisterRequest registerRequest = gson.fromJson((request.body()), RegisterRequest.class);
+
+        //get registerResponse from registerService
+        RegisterResponse registerResponse = registerService.register(registerRequest);
+
+        //set status
+        if (Objects.equals(registerResponse.getMessage(), "Error: bad request")) {
+            response.status(400);
+        }
+        if (Objects.equals(registerResponse.getMessage(), "Error: already taken")) {
+            response.status(403);
+        }
+        if (Objects.equals(registerResponse.getMessage(), "Error: description")) {
+            response.status(500);
+        }
+
+        return gson.toJson(registerResponse);
+    }
 }

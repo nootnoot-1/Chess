@@ -2,6 +2,8 @@ package dataAccess;
 
 import models.Game;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -12,7 +14,7 @@ public class GameDAO {
     /**
     Hash Set of all games being held in the server
      */
-    Collection<Game> games = new HashSet<>();
+    static Collection<Game> games = new HashSet<>();
 
     /**
     A method for inserting a new game into the database.
@@ -69,4 +71,42 @@ public class GameDAO {
     @throws data access exception
      */
     public void Clear() throws DataAccessException {}
+
+//    public void makeSQLCalls() throws SQLException {
+//        try (var conn = getConnection() {
+//
+//        })
+//    }
+//
+//    Connection getConnection() throws SQLException {
+//        retrun DriverManager.getConnection(
+//                "jdbc:mysql://localhost:3306",
+//
+//        )
+//    }
+
+//    void configureDatabase() throws SQLException {
+//        try (Connection conn = getConnection()) {
+//            try (var createDBStatement = conn.prepareStatement(
+//                    "CREATE DATABASE IF NOT EXISTS pet_store")) {
+//                createDBStatement.executeUpdate();
+//            }
+//
+//            conn.setCatalog("pet_store");
+//
+//            var createPetTable = """
+//                    CREATE TABLE IF NOT EXISTS pet (
+//                    id INT NOT NULL AUTO INCREMENT,
+//                    name VARCHAR(255) NOT NULL,
+//                    type VARCHAR(255) NOT NULL,
+//                    PRIMARY KEY (id) )
+//                    """;
+//
+//            try (var createTableStatement = conn.prepareStatement(createPetTable)) {
+//                createTableStatement.executeUpdate();
+//            }
+//        }
+//    }
 }
+
+

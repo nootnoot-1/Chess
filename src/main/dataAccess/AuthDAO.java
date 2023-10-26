@@ -12,14 +12,15 @@ public class AuthDAO {
     /**
     Hash Set of all authTokens stored in the server
     */
-    Collection<AuthToken> authTokens = new HashSet<>();
+    static Collection<AuthToken> authTokens = new HashSet<>();
 
     /**
     A method for inserting a new authToken into the database.
     @throws data access exception
     @param authToken to insert
     */
-    public void Insert(AuthToken authToken) throws DataAccessException {}
+    public void Insert(AuthToken authToken) //throws DataAccessException
+    {}
 
     /**
     A method for retrieving a specified authToken from the database by username.
@@ -27,7 +28,8 @@ public class AuthDAO {
     @param username to find authToken for
     @return AuthToken that relates to given usernam
      */
-    public AuthToken Find(String username) throws DataAccessException {
+    public AuthToken Find(String username) //throws DataAccessException
+    {
         return null;
     }
 
@@ -36,7 +38,8 @@ public class AuthDAO {
     @throws data access exception
     @return all AuthTokens
      */
-    public Collection<AuthToken> FindAll() throws DataAccessException {
+    public Collection<AuthToken> FindAll() //throws DataAccessException
+    {
         return null;
     }
 
@@ -45,11 +48,13 @@ public class AuthDAO {
     @throws data access exception
     @param authToken to remove
      */
-    public void Remove(AuthToken authToken) throws DataAccessException {}
+    public void Remove(AuthToken authToken) //throws DataAccessException
+    {}
 
     /**
     A method for clearing all data from the database
     @throws data access exception
      */
-    public void Clear() throws DataAccessException {}
+    public void Clear() //throws DataAccessException
+    {}
 }

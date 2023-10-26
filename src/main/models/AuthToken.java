@@ -1,6 +1,8 @@
 package models;
 
 
+import java.util.UUID;
+
 /**
 AuthToken class for server, contains all information about an AuthToken that the server may need to know
  */
@@ -17,7 +19,9 @@ public class AuthToken {
     /**
     Constructor for AuthToken
      */
-    public AuthToken() {}
+    public AuthToken() {
+        authToken = UUID.randomUUID().toString();
+    }
 
     public String getAuthToken() {
         return authToken;
