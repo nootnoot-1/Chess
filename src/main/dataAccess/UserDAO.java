@@ -14,7 +14,7 @@ public class UserDAO {
     /**
     Hash Set of all users stored in the server
      */
-    static Collection<User> users = new HashSet<>();
+    public static Collection<User> users = new HashSet<>();
 
     /**
     A method for inserting a new user into the database.

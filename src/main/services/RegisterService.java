@@ -1,7 +1,6 @@
 package services;
 
 import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
 import models.AuthToken;
 import models.User;
@@ -28,7 +27,6 @@ public class RegisterService {
             registerResponse.setMessage("Error: bad request");
             return registerResponse;
         }
-
         if (userDAO.Find(r.getUsername())!=null) {
             registerResponse.setMessage("Error: already taken");
             return registerResponse;

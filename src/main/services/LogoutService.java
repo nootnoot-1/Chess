@@ -1,6 +1,7 @@
 package services;
 
-import services.request.LogoutRequest;
+import dataAccess.AuthDAO;
+import dataAccess.UserDAO;
 import services.response.LogoutResponse;
 
 /**
@@ -13,7 +14,20 @@ public class LogoutService {
     @param LogoutRequest r an object containing all request data
     @return LogoutResponse an object containing all response data
      */
-    public LogoutResponse Logout(LogoutRequest r) {
-        return null;
+    public LogoutResponse logout(String authToken) {
+        LogoutResponse logoutResponse = new LogoutResponse();
+        UserDAO userDAO = new UserDAO();
+        AuthDAO authDAO = new AuthDAO();
+
+        if (authDAO.Find(authToken) == null) {
+            logoutResponse.setMessage("Error: unauthorized");
+            return logoutResponse;
+        }
+
+        authDAO.Remove(authToken);
+
+        logoutResponse.setAuthToken(authToken);
+
+        return logoutResponse;
     }
 }
