@@ -32,17 +32,19 @@ public class LoginService {
             return loginResponse;
         }
 
-        for (AuthToken it : authDAO.FindAll()) {
-            if (Objects.equals(it.getUsername(), r.getUsername())) {
-                loginResponse.setMessage("Error: already logged in");
-                return loginResponse;
-            }
-        }
+//        for (AuthToken it : authDAO.FindAll()) {
+//            if (Objects.equals(it.getUsername(), r.getUsername())) {
+//                loginResponse.setMessage("Error: already logged in");
+//                return loginResponse;
+//            }
+//        }
 
         AuthToken authToken = new AuthToken();
+        authToken.setUsername(r.getUsername());
         authDAO.Insert(authToken);
 
         loginResponse.setAuthToken(authToken.getAuthToken());
+        loginResponse.setUsername(r.getUsername());
 
         return loginResponse;
     }

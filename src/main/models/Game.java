@@ -1,6 +1,7 @@
 package models;
 
 import chess.GameImpl;
+import dataAccess.GameDAO;
 
 /**
 Model class for Games, contains all necessary information a server will need to know about a specific game
@@ -30,7 +31,12 @@ public class Game {
     /**
     Constructor for game class
      */
-    public Game() {}
+    public Game(String name) {
+        GameDAO gameDAO = new GameDAO();
+        gameID = gameDAO.FindAll().size() + 1000;
+        gameName = name;
+        game = new GameImpl();
+    }
 
     public int getGameID() {
         return gameID;

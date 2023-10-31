@@ -15,9 +15,8 @@ public class Main {
 //            // for you, but you can always add more by pressing Ctrl+F8.
 //            System.out.println("i = " + i);
 //        }
-        BoardImpl board = new BoardImpl();
-        board.resetBoard();
-        System.out.println(board.toString());
-        System.out.println("hi");
+        String jstr = "what is \nup?";
+        String out = jstr.replace(" is \n", "");
+        System.out.println(out);
     }
 }

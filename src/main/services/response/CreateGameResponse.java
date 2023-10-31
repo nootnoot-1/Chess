@@ -8,14 +8,12 @@ public class CreateGameResponse {
     message for any errors that occur
      */
     private String message;
-    /**
-    String to name the game
-     */
-    private String gameName;
+
     /**
     authToken to verify user
      */
     private String authToken;
+
     /**
     int used to indentify specific game
      */
@@ -32,14 +30,6 @@ public class CreateGameResponse {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String getGameName() {
-        return gameName;
-    }
-
-    public void setGameName(String gameName) {
-        this.gameName = gameName;
     }
 
     public String getAuthToken() {

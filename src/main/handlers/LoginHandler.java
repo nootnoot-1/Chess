@@ -19,12 +19,13 @@ public class LoginHandler {
 
         LoginResponse loginResponse = loginService.login(loginRequest);
 
+        response.status(200);
         if (Objects.equals(loginResponse.getMessage(), "Error: unauthorized")) {
             response.status(401);
         }
-        if (Objects.equals(loginResponse.getMessage(), "Error: already logged in")) {
-            response.status(500);
-        }
+//        if (Objects.equals(loginResponse.getMessage(), "Error: already logged in")) {
+//            response.status(450);
+//        }
 
         return gson.toJson(loginResponse);
     }

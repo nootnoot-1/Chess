@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 /**
 Game Data Authentication Class. For connecting with the database for game information
@@ -39,6 +40,16 @@ public class GameDAO {
     {
         for (Game it : games) {
             if (it.getGameID() == gameID) {
+                return it;
+            }
+        }
+        return null;
+    }
+
+    public Game FindGN(String name) //throws DataAccessException
+    {
+        for (Game it : games) {
+            if (Objects.equals(it.getGameName(), name)) {
                 return it;
             }
         }

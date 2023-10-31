@@ -7,6 +7,8 @@ import services.response.CreateGameResponse;
 import spark.Request;
 import spark.Response;
 
+import java.util.Objects;
+
 public class CreateGameHandler {
 
     public String handleRequest(Request request, Response response) {
@@ -14,12 +16,28 @@ public class CreateGameHandler {
         Gson gson = new Gson();
 
         CreateGameRequest createGameRequest = gson.fromJson(request.body(), CreateGameRequest.class);
+        String authToken = request.headers("authorization");
 
-        CreateGameResponse createGameResponse = createGameService.createGame(createGameRequest);
+        CreateGameResponse createGameResponse = createGameService.createGame(createGameRequest, authToken);
 
+        response.status(200);
+        if (Objects.equals(createGameResponse.getMessage(), "Error: bad request")) {
+            response.status(400);
+            String jstr = gson.toJson(createGameResponse);
+            return jstr.replace(",\"gameID\":0", "");
+        }
+        if (Objects.equals(createGameResponse.getMessage(), "Error: unauthorized")) {
+            response.status(401);
+            String jstr = gson.toJson(createGameResponse);
+            return jstr.replace(",\"gameID\":0", "");
+        }
+        if (Objects.equals(createGameResponse.getMessage(), "Error: game name already taken")) {
+            response.status(500);
+            String jstr = gson.toJson(createGameResponse);
+            return jstr.replace(",\"gameID\":0", "");
+        }
 
-
-        return null;
+        return gson.toJson(createGameResponse);
     }
 
 }

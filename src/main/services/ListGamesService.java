@@ -1,5 +1,8 @@
 package services;
 
+import dataAccess.AuthDAO;
+import dataAccess.GameDAO;
+import models.Game;
 import services.request.ListGamesRequest;
 import services.response.ListGamesResponse;
 
@@ -13,7 +16,18 @@ public class ListGamesService {
     @param ListGamesRequest r an object containing all request data
     @return ListGamesResponse an object containing all response data
      */
-    public ListGamesResponse ListGames(ListGamesRequest r) {
-        return null;
+    public ListGamesResponse listGames(String authToken) {
+        ListGamesResponse listGamesResponse = new ListGamesResponse();
+        GameDAO gameDAO = new GameDAO();
+        AuthDAO authDAO = new AuthDAO();
+
+        if (authDAO.Find(authToken) == null) {
+            listGamesResponse.setMessage("Error: unauthorized");
+            return listGamesResponse;
+        }
+
+        listGamesResponse.setGames(gameDAO.FindAll());
+
+        return listGamesResponse;
     }
 }

@@ -1,6 +1,7 @@
 package services;
 
 import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
 import models.AuthToken;
 import models.User;
@@ -41,6 +42,7 @@ public class RegisterService {
         user.setUsername(r.getUsername());
         user.setPassword(r.getPassword());
         user.setEmail(r.getEmail());
+
         userDAO.Insert(user);
 
         //fill in response

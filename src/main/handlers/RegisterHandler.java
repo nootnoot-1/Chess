@@ -23,6 +23,7 @@ public class RegisterHandler {
         RegisterResponse registerResponse = registerService.register(registerRequest);
 
         //set status
+        response.status(200);
         if (Objects.equals(registerResponse.getMessage(), "Error: bad request")) {
             response.status(400);
         }

@@ -19,6 +19,7 @@ public class LogoutHandler {
 
         LogoutResponse logoutResponse = logoutService.logout(request.headers("authorization"));
 
+        response.status(200);
         if (Objects.equals(logoutResponse.getMessage(), "Error: unauthorized")) {
             response.status(401);
         }
