@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ServiceTests {
 
     @BeforeEach
-    public void cleanup() {
+    public void cleanup() throws DataAccessException {
         UserDAO userDAO = new UserDAO();
         AuthDAO authDAO = new AuthDAO();
         GameDAO gameDAO = new GameDAO();
@@ -40,7 +40,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void RegisterPositive() {
+    public void RegisterPositive() throws DataAccessException {
         UserDAO userDAO = new UserDAO();
         User user = null;
         user = userDAO.Find("collinlowree");
@@ -54,7 +54,7 @@ public class ServiceTests {
         assertFalse(authDAO.FindAll().isEmpty());
     }
     @Test
-    public void RegisterNegative() {
+    public void RegisterNegative() throws DataAccessException {
         RegisterRequest request = new RegisterRequest();
         request.setUsername("collinlowree");
         request.setPassword("mypassword123");
@@ -75,7 +75,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void LogoutPositive() {
+    public void LogoutPositive() throws DataAccessException {
         AuthDAO authDAO = new AuthDAO();
         LogoutService logoutService = new LogoutService();
 
@@ -84,7 +84,7 @@ public class ServiceTests {
         assertTrue(authDAO.FindAll().isEmpty());
     }
     @Test
-    public void LogoutNegative() {
+    public void LogoutNegative() throws DataAccessException {
         AuthDAO authDAO = new AuthDAO();
         LogoutService logoutService = new LogoutService();
 
@@ -94,7 +94,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void LoginPositive() {
+    public void LoginPositive() throws DataAccessException {
         AuthDAO authDAO = new AuthDAO();
         LogoutService logoutService = new LogoutService();
         LoginService loginService = new LoginService();
@@ -110,7 +110,7 @@ public class ServiceTests {
         assertEquals(loginResponse.getAuthToken(), authDAO.FindU("collinlowree").getAuthToken());
     }
     @Test
-    public void LoginNegative() {
+    public void LoginNegative() throws DataAccessException {
         AuthDAO authDAO = new AuthDAO();
         LogoutService logoutService = new LogoutService();
         LoginService loginService = new LoginService();
@@ -127,7 +127,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void CreateGamePositive() {
+    public void CreateGamePositive() throws DataAccessException {
         CreateGameRequest request = new CreateGameRequest();
         CreateGameService service = new CreateGameService();
         GameDAO gameDAO = new GameDAO();
@@ -140,7 +140,7 @@ public class ServiceTests {
         assertNotNull(gameDAO.FindAll());
     }
     @Test
-    public void CreateGameNegative() {
+    public void CreateGameNegative() throws DataAccessException {
         CreateGameRequest request = new CreateGameRequest();
         CreateGameService service = new CreateGameService();
         GameDAO gameDAO = new GameDAO();
@@ -157,7 +157,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void ListGamesPositive() {
+    public void ListGamesPositive() throws DataAccessException {
         ListGamesService service = new ListGamesService();
         GameDAO gameDAO = new GameDAO();
         AuthDAO authDAO = new AuthDAO();
@@ -180,7 +180,7 @@ public class ServiceTests {
         assertEquals(2, gameDAO.FindAll().size());
     }
     @Test
-    public void ListGamesNegative() {
+    public void ListGamesNegative() throws DataAccessException {
         ListGamesService service = new ListGamesService();
 
         ListGamesResponse response = service.listGames("bad authToken");
@@ -189,7 +189,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void JoinGamePositive() {
+    public void JoinGamePositive() throws DataAccessException {
         JoinGameRequest request = new JoinGameRequest();
         JoinGameService service = new JoinGameService();
         GameDAO gameDAO = new GameDAO();
@@ -208,7 +208,7 @@ public class ServiceTests {
         assertEquals("collinlowree", gameDAO.FindGN("Room One").getBlackUsername());
     }
     @Test
-    public void JoinGameNegative() {
+    public void JoinGameNegative() throws DataAccessException {
         JoinGameRequest request = new JoinGameRequest();
         JoinGameService service = new JoinGameService();
         AuthDAO authDAO = new AuthDAO();
@@ -223,7 +223,7 @@ public class ServiceTests {
         JoinGameResponse response = service.joinGame(request, authDAO.FindU("collinlowree").getAuthToken());
         assertEquals("Error: bad request", response.getMessage());
 
-        request.setGameID(1000);
+        request.setGameID(1001);
         request.setPlayerColor("BLACK");
         service.joinGame(request, authDAO.FindU("collinlowree").getAuthToken());
         JoinGameResponse response2 = service.joinGame(request, authDAO.FindU("collinlowree").getAuthToken());
@@ -235,7 +235,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void ClearApplication() {
+    public void ClearApplication() throws DataAccessException {
         ClearApplicationService service = new ClearApplicationService();
         GameDAO gameDAO = new GameDAO();
         AuthDAO authDAO = new AuthDAO();

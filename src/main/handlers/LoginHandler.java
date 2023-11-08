@@ -1,6 +1,7 @@
 package handlers;
 
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import services.LoginService;
 import services.request.LoginRequest;
 import services.response.LoginResponse;
@@ -11,7 +12,7 @@ import java.util.Objects;
 
 public class LoginHandler {
 
-    public String handleRequest(Request request, Response response) {
+    public String handleRequest(Request request, Response response) throws DataAccessException {
         LoginService loginService = new LoginService();
         Gson gson = new Gson();
 

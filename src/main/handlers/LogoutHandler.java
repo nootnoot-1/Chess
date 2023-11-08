@@ -2,6 +2,7 @@ package handlers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import dataAccess.DataAccessException;
 import services.LogoutService;
 import services.request.LogoutRequest;
 import services.response.LogoutResponse;
@@ -13,7 +14,7 @@ import java.util.Objects;
 
 public class LogoutHandler {
 
-    public String handleRequest(Request request, Response response) {
+    public String handleRequest(Request request, Response response) throws DataAccessException {
         LogoutService logoutService = new LogoutService();
         Gson gson = new Gson();
 

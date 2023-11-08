@@ -2,6 +2,7 @@ package handlers;
 
 
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import services.RegisterService;
 import services.request.RegisterRequest;
 import services.response.RegisterResponse;
@@ -12,7 +13,7 @@ import java.util.Objects;
 
 public class RegisterHandler {
 
-    public String handleRequest(Request request, Response response) {
+    public String handleRequest(Request request, Response response) throws DataAccessException {
         RegisterService registerService = new RegisterService();
         Gson gson = new Gson();
 

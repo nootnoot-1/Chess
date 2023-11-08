@@ -1,12 +1,14 @@
 package models;
 
 import chess.GameImpl;
+import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 
 /**
 Model class for Games, contains all necessary information a server will need to know about a specific game
  */
 public class Game {
+    static int gameIDIT;
     /**
     numerical identifier for specific game
      */
@@ -31,9 +33,10 @@ public class Game {
     /**
     Constructor for game class
      */
-    public Game(String name) {
+    public Game(String name) throws DataAccessException {
         GameDAO gameDAO = new GameDAO();
-        gameID = gameDAO.FindAll().size() + 1000;
+        gameID = gameIDIT + 1000;
+        ++gameIDIT;
         gameName = name;
         game = new GameImpl();
     }

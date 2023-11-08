@@ -1,6 +1,7 @@
 package services;
 
 import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import models.Game;
 import services.request.CreateGameRequest;
@@ -17,7 +18,7 @@ public class CreateGameService {
     @param CreateGameRequest r an object containing all request data
     @return CreateGameResponse an object containing all response data
      */
-    public CreateGameResponse createGame(CreateGameRequest r, String authToken) {
+    public CreateGameResponse createGame(CreateGameRequest r, String authToken) throws DataAccessException {
         CreateGameResponse createGameResponse = new CreateGameResponse();
         GameDAO gameDAO = new GameDAO();
         AuthDAO authDAO = new AuthDAO();

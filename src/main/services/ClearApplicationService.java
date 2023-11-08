@@ -1,6 +1,7 @@
 package services;
 
 import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import dataAccess.UserDAO;
 import services.request.ClearApplicationRequest;
@@ -16,7 +17,7 @@ public class ClearApplicationService {
     @param ClearApplicationRequest r an object containing all request data
     @return ClearApplicationResponse an object containing all response data
      */
-    public ClearApplicationResponse clearApplication() {
+    public ClearApplicationResponse clearApplication() throws DataAccessException {
         ClearApplicationResponse clearApplicationResponse = new ClearApplicationResponse();
 
         UserDAO userDAO = new UserDAO();

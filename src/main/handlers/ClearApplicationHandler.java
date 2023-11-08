@@ -1,6 +1,7 @@
 package handlers;
 
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import services.ClearApplicationService;
 import services.request.ClearApplicationRequest;
 import services.response.ClearApplicationResponse;
@@ -9,7 +10,7 @@ import spark.Response;
 
 public class ClearApplicationHandler {
 
-    public String handleRequest(Request request, Response response) {
+    public String handleRequest(Request request, Response response) throws DataAccessException {
         ClearApplicationService clearApplicationService = new ClearApplicationService();
         Gson gson = new Gson();
 

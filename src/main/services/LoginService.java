@@ -2,6 +2,7 @@ package services;
 
 import com.mysql.cj.log.Log;
 import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
 import models.AuthToken;
 import models.User;
@@ -20,7 +21,7 @@ public class LoginService {
     @param LoginRequest r an object containing all request data
     @return LoginResponse an object containing all response data
      */
-    public LoginResponse login(LoginRequest r) {
+    public LoginResponse login(LoginRequest r) throws DataAccessException {
         LoginResponse loginResponse = new LoginResponse();
         UserDAO userDAO = new UserDAO();
         AuthDAO authDAO = new AuthDAO();

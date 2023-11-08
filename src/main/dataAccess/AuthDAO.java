@@ -1,7 +1,6 @@
 package dataAccess;
 
 import models.AuthToken;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -20,7 +19,7 @@ public class AuthDAO {
     @throws data access exception
     @param authToken to insert
     */
-    public void Insert(AuthToken authToken) //throws DataAccessException
+    public void Insert(AuthToken authToken) throws DataAccessException
     {
         if (!authTokens.contains(authToken)) {
             authTokens.add(authToken);
@@ -33,7 +32,7 @@ public class AuthDAO {
     @param username to find authToken for
     @return AuthToken that relates to given usernam
      */
-    public AuthToken Find(String authToken) //throws DataAccessException
+    public AuthToken Find(String authToken) throws DataAccessException
     {
         for (AuthToken it : authTokens) {
             if (Objects.equals(it.getAuthToken(), authToken)) {
@@ -43,7 +42,7 @@ public class AuthDAO {
         return null;
     }
 
-    public AuthToken FindU(String username) {
+    public AuthToken FindU(String username) throws DataAccessException {
         for (AuthToken it : authTokens) {
             if (Objects.equals(it.getUsername(), username)) {
                 return it;
@@ -57,7 +56,7 @@ public class AuthDAO {
     @throws data access exception
     @return all AuthTokens
      */
-    public Collection<AuthToken> FindAll() //throws DataAccessException
+    public Collection<AuthToken> FindAll() throws DataAccessException
     {
         return authTokens;
     }
@@ -67,7 +66,7 @@ public class AuthDAO {
     @throws data access exception
     @param authToken to remove
      */
-    public void Remove(String authToken) //throws DataAccessException
+    public void Remove(String authToken) throws DataAccessException
     {
         for (AuthToken it : authTokens) {
             if (Objects.equals(it.getAuthToken(), authToken)) {
@@ -80,7 +79,7 @@ public class AuthDAO {
     A method for clearing all data from the database
     @throws data access exception
      */
-    public void Clear() //throws DataAccessException
+    public void Clear() throws DataAccessException
     {
         authTokens.clear();
     }

@@ -18,7 +18,7 @@ public class RegisterService {
     @param RegisterRequest r an object containing all request data
     @return RegisterResponse an object containing all response data
      */
-    public RegisterResponse register(RegisterRequest r) {
+    public RegisterResponse register(RegisterRequest r) throws DataAccessException {
         RegisterResponse registerResponse = new RegisterResponse();
         UserDAO userDAO = new UserDAO();
         AuthDAO authDAO = new AuthDAO();

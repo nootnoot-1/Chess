@@ -23,6 +23,8 @@ public class Server {
         Spark.put("/game", (request, response) -> (new JoinGameHandler()).handleRequest(request, response));
         Spark.get("/game", (request, response) -> (new ListGamesHandler()).handleRequest(request, response));
 
+
+
     }
 }
 

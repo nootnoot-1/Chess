@@ -2,9 +2,6 @@ package dataAccess;
 
 import chess.ChessGame;
 import models.Game;
-
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -23,7 +20,7 @@ public class GameDAO {
     @throws data access exception
     @param Game to insert
      */
-    public void Insert(Game game) //throws DataAccessException
+    public void Insert(Game game) throws DataAccessException
     {
         if (!games.contains(game)) {
             games.add(game);
@@ -36,7 +33,7 @@ public class GameDAO {
     @param gameID of Game to find
     @return Game that relates to gameID
      */
-    public Game Find(int gameID) //throws DataAccessException
+    public Game Find(int gameID) throws DataAccessException
     {
         for (Game it : games) {
             if (it.getGameID() == gameID) {
@@ -46,7 +43,7 @@ public class GameDAO {
         return null;
     }
 
-    public Game FindGN(String name) //throws DataAccessException
+    public Game FindGN(String name) throws DataAccessException
     {
         for (Game it : games) {
             if (Objects.equals(it.getGameName(), name)) {
@@ -61,7 +58,7 @@ public class GameDAO {
     @throws data access exception
     @return Collection of all Games in database
      */
-    public Collection<Game> FindAll() //throws DataAccessException
+    public Collection<Game> FindAll() throws DataAccessException
     {
         return games;
     }
@@ -97,7 +94,7 @@ public class GameDAO {
     @param gameID of game to update
     @param chessGame string game of what the updated game should be
      */
-    public void UpdateGame(int gameID, Game game) //throws DataAccessException //TODO what is a new chessGame string?
+    public void UpdateGame(int gameID, Game game) throws DataAccessException //TODO what is a new chessGame string?
     {
         for (Game it : games) {
             if (it.getGameID() == gameID) {

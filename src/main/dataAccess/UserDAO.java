@@ -1,7 +1,6 @@
 package dataAccess;
 
 import models.User;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -21,7 +20,7 @@ public class UserDAO {
     @throws data access exception
     @param user to insert into database
     */
-    public void Insert(User user) //throws DataAccessException
+    public void Insert(User user) throws DataAccessException
     {
         if (!users.contains(user)) {
             users.add(user);
@@ -34,7 +33,7 @@ public class UserDAO {
     @param username of User to find
     @return User that relates to given username
      */
-    public User Find(String username) //throws DataAccessException
+    public User Find(String username) throws DataAccessException
     {
         for (User it : users) {
             if (Objects.equals(it.getUsername(), username)) {
@@ -49,7 +48,7 @@ public class UserDAO {
     @throws data access exception
     @return Collection of all Users in the database
      */
-    public Collection<User> FindAll() //throws DataAccessException
+    public Collection<User> FindAll() throws DataAccessException
     {
         return users;
     }
@@ -59,7 +58,7 @@ public class UserDAO {
     @throws data access exception
     @param user to be removed from the database
      */
-    public void Remove(User user) //throws DataAccessException
+    public void Remove(User user) throws DataAccessException
     {
         users.remove(user);
     }
@@ -68,7 +67,7 @@ public class UserDAO {
     A method for clearing all data from the database
     @throws data access exception
      */
-    public void Clear() //throws DataAccessException
+    public void Clear() throws DataAccessException
     {
         users.clear();
     }

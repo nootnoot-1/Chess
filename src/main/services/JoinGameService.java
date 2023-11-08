@@ -1,6 +1,7 @@
 package services;
 
 import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import models.Game;
 import services.request.JoinGameRequest;
@@ -18,7 +19,7 @@ public class JoinGameService {
     @param JoinGameRequest r an object containing all request data
     @return JoinGameResponse an object containing all response data
      */
-    public JoinGameResponse joinGame(JoinGameRequest r, String authToken) {
+    public JoinGameResponse joinGame(JoinGameRequest r, String authToken) throws DataAccessException {
         JoinGameResponse joinGameResponse = new JoinGameResponse();
         GameDAO gameDAO = new GameDAO();
         AuthDAO authDAO = new AuthDAO();
