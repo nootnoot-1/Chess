@@ -28,11 +28,11 @@ public class JoinGameService {
             joinGameResponse.setMessage("Error: unauthorized");
             return joinGameResponse;
         }
-        if (r.getGameID() < 999) {
+        if (r.getGameID() < 0) {
             joinGameResponse.setMessage("Error: bad request");
             return joinGameResponse;
         }
-
+//TODO should be finding if game ID is accurate somehow
         Game game = gameDAO.Find(r.getGameID());
 
         if (Objects.equals(r.getPlayerColor(), "BLACK")) {

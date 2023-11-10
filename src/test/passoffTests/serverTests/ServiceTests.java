@@ -218,12 +218,12 @@ public class ServiceTests {
         request2.setGameName("Room One");
         service2.createGame(request2, authDAO.FindU("collinlowree").getAuthToken());
 
-        request.setGameID(911);
+        request.setGameID(0);
         request.setPlayerColor("BLACK");
         JoinGameResponse response = service.joinGame(request, authDAO.FindU("collinlowree").getAuthToken());
         assertEquals("Error: bad request", response.getMessage());
 
-        request.setGameID(1001);
+        request.setGameID(1);
         request.setPlayerColor("BLACK");
         service.joinGame(request, authDAO.FindU("collinlowree").getAuthToken());
         JoinGameResponse response2 = service.joinGame(request, authDAO.FindU("collinlowree").getAuthToken());

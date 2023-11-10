@@ -1,6 +1,11 @@
 package dataAccess;
 
 import models.AuthToken;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -9,6 +14,9 @@ import java.util.Objects;
 AuthToken Data Authentication Class. For connecting with the database for game information
  */
 public class AuthDAO {
+    static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection("jdbc:mysql://localhost:3306", "root", "admin");
+    }
     /**
     Hash Set of all authTokens stored in the server
     */
@@ -40,6 +48,19 @@ public class AuthDAO {
             }
         }
         return null;
+
+//        try(var conn = getConnection()) {
+//            conn.setCatalog("chess");
+//            var makeauthToken = """
+//                    INSERT INTO authTokens (username) VALUES (?)
+//                    """;
+//
+//
+//
+//        } catch (SQLException e) {
+//            throw new DataAccessException(e.getMessage());
+//        }
+
     }
 
     public AuthToken FindU(String username) throws DataAccessException {
