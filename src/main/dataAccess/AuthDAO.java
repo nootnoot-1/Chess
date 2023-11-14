@@ -1,6 +1,7 @@
 package dataAccess;
 
 import models.AuthToken;
+import models.User;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,9 +15,7 @@ import java.util.Objects;
 AuthToken Data Authentication Class. For connecting with the database for game information
  */
 public class AuthDAO {
-    static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306", "root", "admin");
-    }
+    static Database db = new Database();
     /**
     Hash Set of all authTokens stored in the server
     */
@@ -29,8 +28,20 @@ public class AuthDAO {
     */
     public void Insert(AuthToken authToken) throws DataAccessException
     {
-        if (!authTokens.contains(authToken)) {
-            authTokens.add(authToken);
+        var conn = db.getConnection();
+
+        try {
+            //conn.setCatalog("chess");
+            var insert = conn.prepareStatement("INSERT INTO auth (authToken, username) VALUES (?,?)");
+            insert.setString(1, authToken.getAuthToken());
+            insert.setString(2, authToken.getUsername());
+
+            insert.executeUpdate();
+
+            db.returnConnection(conn);
+        } catch (SQLException e) {
+            db.returnConnection(conn);
+            throw new DataAccessException(e.getMessage());
         }
     }
 
@@ -42,34 +53,52 @@ public class AuthDAO {
      */
     public AuthToken Find(String authToken) throws DataAccessException
     {
-        for (AuthToken it : authTokens) {
-            if (Objects.equals(it.getAuthToken(), authToken)) {
-                return it;
-            }
-        }
-        return null;
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement("SELECT authToken, username FROM auth WHERE authToken=?")) {
+            preparedStatement.setString(1, authToken);
+            try (var rs = preparedStatement.executeQuery()) {
+                rs.next();
+                var token = rs.getString("authToken");
+                var username = rs.getString("username");
 
-//        try(var conn = getConnection()) {
-//            conn.setCatalog("chess");
-//            var makeauthToken = """
-//                    INSERT INTO authTokens (username) VALUES (?)
-//                    """;
-//
-//
-//
-//        } catch (SQLException e) {
-//            throw new DataAccessException(e.getMessage());
-//        }
+                System.out.printf("authToken: %s, username: %s \n", token, username);
+
+                AuthToken reToken = new AuthToken();
+                reToken.setAuthToken(token);
+                reToken.setUsername(username);
+                db.returnConnection(conn);
+                return reToken;
+            }
+        } catch (SQLException e) {
+            db.returnConnection(conn);
+            throw new DataAccessException("AUTHTOKEN FIND ERROR");
+            //throw new DataAccessException(e.getMessage());
+        }
 
     }
 
-    public AuthToken FindU(String username) throws DataAccessException {
-        for (AuthToken it : authTokens) {
-            if (Objects.equals(it.getUsername(), username)) {
-                return it;
+    public AuthToken FindU(String uname) throws DataAccessException {
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement("SELECT authToken, username FROM auth WHERE username=?")) {
+            preparedStatement.setString(1, uname);
+            try (var rs = preparedStatement.executeQuery()) {
+                rs.next();
+                var token = rs.getString("authToken");
+                var username = rs.getString("username");
+
+                System.out.printf("authToken: %s, username: %s \n", token, username);
+
+                AuthToken reToken = new AuthToken();
+                reToken.setAuthToken(token);
+                reToken.setUsername(username);
+                db.returnConnection(conn);
+                return reToken;
             }
+        } catch (SQLException e) {
+            db.returnConnection(conn);
+            throw new DataAccessException("AUTHTOKEN FINDU ERROR");
+            //throw new DataAccessException(e.getMessage());
         }
-        return null;
     }
 
     /**
@@ -79,7 +108,29 @@ public class AuthDAO {
      */
     public Collection<AuthToken> FindAll() throws DataAccessException
     {
-        return authTokens;
+        Collection<AuthToken> tokens = new HashSet<>();
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement("SELECT authToken, username FROM auth")) {
+            try (var rs = preparedStatement.executeQuery()) {
+                while(rs.next()) {
+                    var username = rs.getString("username");
+                    var token = rs.getString("authToken");
+
+                    System.out.printf("authToken: %s, username: %s \n", token, username);
+
+                    AuthToken reToken = new AuthToken();
+                    reToken.setAuthToken(token);
+                    reToken.setUsername(username);
+
+                    tokens.add(reToken);
+                }
+            }
+        } catch (SQLException e) {
+            db.returnConnection(conn);
+            throw new DataAccessException("empty database?");
+        }
+        db.returnConnection(conn);
+        return tokens;
     }
 
     /**
@@ -89,10 +140,17 @@ public class AuthDAO {
      */
     public void Remove(String authToken) throws DataAccessException
     {
-        for (AuthToken it : authTokens) {
-            if (Objects.equals(it.getAuthToken(), authToken)) {
-                authTokens.remove(it);
-            }
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement("DELETE FROM auth WHERE authToken=?")) {
+            preparedStatement.setString(1,authToken);
+
+            preparedStatement.executeUpdate();
+
+            db.returnConnection(conn);
+        } catch (SQLException e) {
+            db.returnConnection(conn);
+            throw new DataAccessException("failed to remove authToken");
+            //throw new DataAccessException(e.getMessage());
         }
     }
 
@@ -102,6 +160,28 @@ public class AuthDAO {
      */
     public void Clear() throws DataAccessException
     {
-        authTokens.clear();
+        var conn = db.getConnection();
+        try (var dropauth = conn.prepareStatement("DROP TABLE auth;")) {
+            dropauth.executeUpdate();
+        } catch (SQLException e) {
+            db.returnConnection(conn);
+            throw new DataAccessException(e.getMessage());
+        }
+
+        var createAUTHTable = """
+                    CREATE TABLE IF NOT EXISTS AUTH (
+                    id INT NOT NULL AUTO_INCREMENT,
+                    authToken VARCHAR(255) NOT NULL,
+                    username VARCHAR(255) NOT NULL,
+                    PRIMARY KEY (id)
+                    )""";
+
+        try (var createTableStatement = conn.prepareStatement(createAUTHTable)) {
+            createTableStatement.executeUpdate();
+        } catch (SQLException e) {
+            db.returnConnection(conn);
+            throw new DataAccessException(e.getMessage());
+        }
+        db.returnConnection(conn);
     }
 }
