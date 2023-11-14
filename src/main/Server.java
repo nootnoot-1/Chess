@@ -1,4 +1,7 @@
+import dataAccess.DataAccessException;
+import dataAccess.UserDAO;
 import handlers.*;
+import models.User;
 import spark.Spark;
 
 import java.sql.Connection;
@@ -13,12 +16,12 @@ public class Server {
     public static void main(String[] args) {
         try {
             run();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    public static void run() throws SQLException {
+    public static void run() throws DataAccessException {
         Spark.port(8080);
 
         Spark.externalStaticFileLocation("web");
@@ -77,6 +80,27 @@ public class Server {
                 createTableStatement.executeUpdate();
             }
         }
+        catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+
+//        UserDAO userDAO = new UserDAO();
+//        User user = new User();
+//        user.setUsername("Collin");
+//        user.setPassword("12534");
+//        user.setEmail("collinden19@gmail.com");
+//        userDAO.Insert(user);
+//        user.setUsername("Carson");
+//        user.setPassword("43521");
+//        user.setEmail("carson@gmail.com");
+//        userDAO.Insert(user);
+//        user.setUsername("Jason");
+//        user.setPassword("woohoo");
+//        user.setEmail("jason@gmail.com");
+//        userDAO.Insert(user);
+//        userDAO.Remove(user);
+//        int num = 2;
+
     }
 
     static Connection getConnection() throws SQLException {
