@@ -2,6 +2,8 @@ package dataAccess;
 
 import chess.ChessGame;
 import models.Game;
+
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -10,29 +12,29 @@ import java.util.Objects;
 Game Data Authentication Class. For connecting with the database for game information
  */
 public class GameDAO {
-    /**
-    Hash Set of all games being held in the server
-     */
+
+    static Database db = new Database();
     public static Collection<Game> games = new HashSet<>();
 
-    /**
-    A method for inserting a new game into the database.
-    @throws data access exception
-    @param Game to insert
-     */
     public void Insert(Game game) throws DataAccessException
     {
-        if (!games.contains(game)) {
-            games.add(game);
+        var conn = db.getConnection();
+
+        try {
+            //conn.setCatalog("chess");
+            var insert = conn.prepareStatement("INSERT INTO game (gamename, game) VALUES (?,?)");
+            insert.setString(1, game.getGameName());
+            insert.setString(2, game.getGame().toString());
+
+            insert.executeUpdate();
+
+            db.returnConnection(conn);
+        } catch (SQLException e) {
+            db.returnConnection(conn);
+            throw new DataAccessException(e.getMessage());
         }
     }
 
-    /**
-    A method for retrieving a specified game from the database by gameID.
-    @throws data access exception
-    @param gameID of Game to find
-    @return Game that relates to gameID
-     */
     public Game Find(int gameID) throws DataAccessException
     {
         for (Game it : games) {
@@ -53,23 +55,12 @@ public class GameDAO {
         return null;
     }
 
-    /**
-    A method for retrieving all games from the database
-    @throws data access exception
-    @return Collection of all Games in database
-     */
     public Collection<Game> FindAll() throws DataAccessException
     {
         return games;
     }
 
-    /**
-    A method/methods for claiming a spot in the game. The player's username is provied and should be saved as either the whitePlayer or blackPlayer in the database.
-    @throws data access exception
-    @param username of current user
-    @param gameID of game to claim a spot in
-    @param color of which team you will join
-     */
+
     public void ClaimSpot(String username, int gameID, ChessGame.TeamColor color) throws DataAccessException //TODO what data type for color?
     {
         Game game = Find(gameID);
@@ -88,12 +79,6 @@ public class GameDAO {
         }
     }
 
-    /**
-    A method for updating a chessGame in the database. It should replace the chessGame string corresponding to a given gameID with a new chessGame string.
-    @throws data access exception
-    @param gameID of game to update
-    @param chessGame string game of what the updated game should be
-     */
     public void UpdateGame(int gameID, Game game) throws DataAccessException //TODO what is a new chessGame string?
     {
         for (Game it : games) {
@@ -103,12 +88,7 @@ public class GameDAO {
         }
     }
 
-    /**
-    A method for removing a game from the database
-    @throws data access exception
-    @param gameID of which game to remove
-     */
-    public void Remove(int gameID) //throws DataAccessException
+    public void Remove(int gameID) throws DataAccessException
     {
         for (Game it : games) {
             if (it.getGameID() == gameID) {
@@ -117,11 +97,7 @@ public class GameDAO {
         }
     }
 
-    /**
-    A method for clearing all data from the database
-    @throws data access exception
-     */
-    public void Clear() //throws DataAccessException
+    public void Clear() throws DataAccessException
     {
         games.clear();
     }

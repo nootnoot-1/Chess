@@ -8,6 +8,16 @@ import java.util.Map;
 public class BoardImpl implements ChessBoard{
     private Map<PositionImpl,ChessPiece> board = new HashMap<>();
 
+    public BoardImpl() {}
+
+    public Map<PositionImpl, ChessPiece> getBoard() {
+        return board;
+    }
+
+    public void setBoard(Map<PositionImpl, ChessPiece> board) {
+        this.board = board;
+    }
+
     @Override
     public void addPiece(ChessPosition position, ChessPiece piece) {
         board.put((PositionImpl)position, piece);

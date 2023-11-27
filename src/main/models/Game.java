@@ -1,5 +1,6 @@
 package models;
 
+import chess.BoardImpl;
 import chess.GameImpl;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
@@ -39,7 +40,12 @@ public class Game {
         ++gameIDIT;
         gameName = name;
         game = new GameImpl();
+        BoardImpl board = new BoardImpl();
+        board.resetBoard();
+        game.setBoard(board);
     }
+
+    public Game() {}
 
     public int getGameID() {
         return gameID;

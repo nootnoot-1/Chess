@@ -16,16 +16,7 @@ AuthToken Data Authentication Class. For connecting with the database for game i
  */
 public class AuthDAO {
     static Database db = new Database();
-    /**
-    Hash Set of all authTokens stored in the server
-    */
-    public static Collection<AuthToken> authTokens = new HashSet<>();
 
-    /**
-    A method for inserting a new authToken into the database.
-    @throws data access exception
-    @param authToken to insert
-    */
     public void Insert(AuthToken authToken) throws DataAccessException
     {
         var conn = db.getConnection();
@@ -45,12 +36,6 @@ public class AuthDAO {
         }
     }
 
-    /**
-    A method for retrieving a specified authToken from the database by username.
-    @throws data access exception
-    @param username to find authToken for
-    @return AuthToken that relates to given usernam
-     */
     public AuthToken Find(String authToken) throws DataAccessException
     {
         var conn = db.getConnection();
@@ -101,11 +86,6 @@ public class AuthDAO {
         }
     }
 
-    /**
-    A method for retrieving all authTokens from the database
-    @throws data access exception
-    @return all AuthTokens
-     */
     public Collection<AuthToken> FindAll() throws DataAccessException
     {
         Collection<AuthToken> tokens = new HashSet<>();
@@ -133,11 +113,6 @@ public class AuthDAO {
         return tokens;
     }
 
-    /**
-    A method for removing a authToken from the database
-    @throws data access exception
-    @param authToken to remove
-     */
     public void Remove(String authToken) throws DataAccessException
     {
         var conn = db.getConnection();
@@ -154,10 +129,6 @@ public class AuthDAO {
         }
     }
 
-    /**
-    A method for clearing all data from the database
-    @throws data access exception
-     */
     public void Clear() throws DataAccessException
     {
         var conn = db.getConnection();

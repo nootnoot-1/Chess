@@ -1,12 +1,20 @@
 package chess;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
-//TODO: The issue is that I am testing if I can move a rook while I am in check, which I should not be able to do, but for some reason the test passes, but the rook also moves.
+
 public class GameImpl implements ChessGame{
     TeamColor teamturn = TeamColor.WHITE;
     BoardImpl gameBoard = new BoardImpl();
+
+    public GameImpl() {}
     @Override
     public TeamColor getTeamTurn() {
         return teamturn;
@@ -208,4 +216,13 @@ public class GameImpl implements ChessGame{
 
         return copyBoard;
     }
+
+    class deserializer implements JsonDeserializer<ChessGame>  {
+
+        @Override
+        public ChessGame deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            return null;
+        }
+    }
+
 }

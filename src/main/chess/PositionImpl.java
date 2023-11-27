@@ -3,12 +3,24 @@ package chess;
 import java.util.Objects;
 
 public class PositionImpl implements ChessPosition{
-    private final int row;
-    private final int column;
+    private int row;
+    private int column;
 
     public PositionImpl(int ro, int co) {
         row = ro;
         column = co;
+    }
+
+    public PositionImpl() {
+
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    public void setColumn(int column) {
+        this.column = column;
     }
 
     @Override
