@@ -7,6 +7,7 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -15,6 +16,53 @@ public class GameImpl implements ChessGame{
     BoardImpl gameBoard = new BoardImpl();
 
     public GameImpl() {}
+
+    public String serialize() {
+        StringBuilder gamestring = new StringBuilder();
+        Map<PositionImpl,ChessPiece> board = gameBoard.getBoard();
+
+        if (teamturn == TeamColor.WHITE) {
+            gamestring.append("W");
+        } else {gamestring.append("B");}
+
+        for (Map.Entry<PositionImpl, ChessPiece> it : board.entrySet()) {
+            gamestring.append(it.getKey().getRow());
+            gamestring.append(it.getKey().getColumn());
+            if (it.getValue().getTeamColor() == TeamColor.WHITE) {
+                if (it.getValue().getPieceType() == ChessPiece.PieceType.KING) {
+                    gamestring.append("K");
+                } else if (it.getValue().getPieceType() == ChessPiece.PieceType.QUEEN) {
+                    gamestring.append("Q");
+                } else if (it.getValue().getPieceType() == ChessPiece.PieceType.BISHOP) {
+                    gamestring.append("B");
+                } else if (it.getValue().getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                    gamestring.append("N");
+                } else if (it.getValue().getPieceType() == ChessPiece.PieceType.ROOK) {
+                    gamestring.append("R");
+                } else if (it.getValue().getPieceType() == ChessPiece.PieceType.PAWN) {
+                    gamestring.append("P");
+                }
+            } else if (it.getValue().getTeamColor() == TeamColor.BLACK) {
+                if (it.getValue().getPieceType() == ChessPiece.PieceType.KING) {
+                    gamestring.append("k");
+                } else if (it.getValue().getPieceType() == ChessPiece.PieceType.QUEEN) {
+                    gamestring.append("q");
+                } else if (it.getValue().getPieceType() == ChessPiece.PieceType.BISHOP) {
+                    gamestring.append("b");
+                } else if (it.getValue().getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                    gamestring.append("n");
+                } else if (it.getValue().getPieceType() == ChessPiece.PieceType.ROOK) {
+                    gamestring.append("r");
+                } else if (it.getValue().getPieceType() == ChessPiece.PieceType.PAWN) {
+                    gamestring.append("p");
+                }
+            }
+        }
+        return gamestring.toString();
+    }
+
+
+
     @Override
     public TeamColor getTeamTurn() {
         return teamturn;
@@ -215,14 +263,6 @@ public class GameImpl implements ChessGame{
         }
 
         return copyBoard;
-    }
-
-    class deserializer implements JsonDeserializer<ChessGame>  {
-
-        @Override
-        public ChessGame deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return null;
-        }
     }
 
 }

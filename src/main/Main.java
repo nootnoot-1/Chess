@@ -10,51 +10,6 @@ import java.lang.reflect.Type;
 public class Main {
     public static void main(String[] args) {
 
-    class PieceAdapter implements JsonDeserializer<ChessPiece> {
-        @Override
-        public ChessPiece deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            System.out.println("hi");
-            ChessPiece chessPiece = new Gson().fromJson(jsonElement, ChessPiece.class);
-            System.out.println(chessPiece.toString());
-            if (chessPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
-                return new Gson().fromJson(jsonElement, RookImpl.class);
-            } else if (chessPiece.getPieceType() == ChessPiece.PieceType.BISHOP) {
-                return new Gson().fromJson(jsonElement, BishopImpl.class);
-            } else if (chessPiece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                return new Gson().fromJson(jsonElement, KnightImpl.class);
-            } else if (chessPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                return new Gson().fromJson(jsonElement, PawnImpl.class);
-            } else if (chessPiece.getPieceType() == ChessPiece.PieceType.KING) {
-                return new Gson().fromJson(jsonElement, KingImpl.class);
-            } else if (chessPiece.getPieceType() == ChessPiece.PieceType.QUEEN) {
-                return new Gson().fromJson(jsonElement, QueenImpl.class);
-            }
-            else {
-                System.out.println("ERROR ASSIGNING PIECETYPE WHILE DESERIALIZING PIECE");
-                return null;
-            }
-        }
-    }
-
-    class BoardAdapter implements JsonDeserializer<ChessBoard> {
-        @Override
-        public ChessBoard deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-//            GsonBuilder builder = new GsonBuilder();
-//            builder.registerTypeAdapter(ChessPiece.class, new PieceAdapter());
-//            Gson gson = builder.create();
-            return new Gson().fromJson(jsonElement, BoardImpl.class);
-        }
-    }
-
-//    class GameAdapter implements JsonDeserializer<ChessGame> {
-//        @Override
-//        public ChessGame deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-////            GsonBuilder builder = new GsonBuilder();
-////            builder.registerTypeAdapter(ChessBoard.class, new BoardAdapter());
-////            Gson gson = builder.create();
-//            return jsonDeserializationContext.deserialize(jsonElement, GameImpl.class);
-//        }
-//    }
 
         Game game = null;
         try {
@@ -63,19 +18,57 @@ public class Main {
             throw new RuntimeException(e);
         }
         System.out.println(game.getGame().getBoard().toString());
-        String gamestring = new Gson().toJson(game.getGame());
+        String gamestring = game.getGame().serialize();
+        System.out.println(gamestring);
 
-        var builder = new GsonBuilder();
-//        builder.registerTypeAdapter(GameImpl.class, new GameAdapter());
-        builder.registerTypeAdapter(BoardImpl.class, new BoardAdapter());
-        builder.registerTypeAdapter(ChessPiece.class, new PieceAdapter());
-        Gson gson = builder.create();
-
-        ChessGame repeatgame = gson.fromJson(gamestring, GameImpl.class);
+        GameImpl repeatgame = deserialize(gamestring);
         System.out.println(repeatgame.getBoard().toString());
 
 //        System.out.println(repeatgame.getBoard().toString());
 
     }
 
+    public static GameImpl deserialize(String gamestring) {
+        GameImpl game = new GameImpl();
+        BoardImpl board = new BoardImpl();
+
+        if (gamestring.charAt(0) == 'W') {
+            game.setTeamTurn(ChessGame.TeamColor.WHITE);
+        } else {game.setTeamTurn(ChessGame.TeamColor.BLACK);}
+
+        for (int i=1; i<gamestring.length(); ++i) {
+            PositionImpl position = new PositionImpl();
+            position.setRow(gamestring.charAt(i)-48); ++i;
+            position.setColumn(gamestring.charAt(i)-48); ++i;
+            ChessPiece piece = null;
+            if (gamestring.charAt(i) == 'K') {
+                piece = new KingImpl(ChessGame.TeamColor.WHITE);
+            } else if (gamestring.charAt(i) == 'Q') {
+                piece = new QueenImpl(ChessGame.TeamColor.WHITE);
+            } else if (gamestring.charAt(i) == 'B') {
+                piece = new BishopImpl(ChessGame.TeamColor.WHITE);
+            } else if (gamestring.charAt(i) == 'N') {
+                piece = new KnightImpl(ChessGame.TeamColor.WHITE);
+            } else if (gamestring.charAt(i) == 'R') {
+                piece = new RookImpl(ChessGame.TeamColor.WHITE);
+            } else if (gamestring.charAt(i) == 'P') {
+                piece = new PawnImpl(ChessGame.TeamColor.WHITE);
+            } else if (gamestring.charAt(i) == 'k') {
+                piece = new PawnImpl(ChessGame.TeamColor.BLACK);
+            } else if (gamestring.charAt(i) == 'q') {
+                piece = new QueenImpl(ChessGame.TeamColor.BLACK);
+            } else if (gamestring.charAt(i) == 'b') {
+                piece = new BishopImpl(ChessGame.TeamColor.BLACK);
+            } else if (gamestring.charAt(i) == 'n') {
+                piece = new KnightImpl(ChessGame.TeamColor.BLACK);
+            } else if (gamestring.charAt(i) == 'r') {
+                piece = new RookImpl(ChessGame.TeamColor.BLACK);
+            } else if (gamestring.charAt(i) == 'p') {
+                piece = new PawnImpl(ChessGame.TeamColor.BLACK);
+            }
+            board.addPiece(position,piece);
+        }
+        game.setBoard(board);
+        return game;
+    }
 }
