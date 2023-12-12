@@ -17,6 +17,15 @@ public class UserDAO {
 
     public void Insert(User user) throws DataAccessException
     {
+        try {
+            Find(user.getUsername());
+            throw new DataAccessException("username is taken");
+        } catch (DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "username is taken")) {
+                throw new DataAccessException("username is taken");
+            }
+        }
+
         var conn = db.getConnection();
 
         try {
@@ -57,7 +66,8 @@ public class UserDAO {
             }
         } catch (SQLException e) {
             db.returnConnection(conn);
-            throw new DataAccessException("no user registered with that username");
+            throw new DataAccessException("ERROR: " +
+                    "no user registered with that username");
             //throw new DataAccessException(e.getMessage());
         }
     }
@@ -93,6 +103,7 @@ public class UserDAO {
 
     public void Remove(User user) throws DataAccessException
     {
+        Find(user.getUsername());
         var conn = db.getConnection();
         try (var preparedStatement = conn.prepareStatement("DELETE FROM user WHERE username=?")) {
             preparedStatement.setString(1,user.getUsername());
@@ -134,4 +145,8 @@ public class UserDAO {
         }
         db.returnConnection(conn);
     }
+
+
+
+
 }

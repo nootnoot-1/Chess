@@ -1,6 +1,9 @@
 package models;
 
 
+import dataAccess.AuthDAO;
+
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -23,6 +26,11 @@ public class AuthToken {
         authToken = UUID.randomUUID().toString();
     }
 
+    public AuthToken(String authToken, String username) {
+        this.authToken = authToken;
+        this.username = username;
+    }
+
     public String getAuthToken() {
         return authToken;
     }
@@ -37,5 +45,19 @@ public class AuthToken {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof AuthToken temp)) return false;
+        boolean flag = true;
+        if (!Objects.equals(temp.getUsername(), username)) {
+            flag = false;
+        }
+        if (!Objects.equals(temp.getAuthToken(), authToken)) {
+            flag = false;
+        }
+        return flag;
     }
 }

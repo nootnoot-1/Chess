@@ -24,9 +24,9 @@ public class LoginHandler {
         if (Objects.equals(loginResponse.getMessage(), "Error: unauthorized")) {
             response.status(401);
         }
-//        if (Objects.equals(loginResponse.getMessage(), "Error: already logged in")) {
-//            response.status(450);
-//        }
+        if (Objects.equals(loginResponse.getMessage(), "ERROR: no user registered with that username")) {
+            response.status(401);
+        }
 
         return gson.toJson(loginResponse);
     }

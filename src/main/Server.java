@@ -1,6 +1,7 @@
 import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
 import handlers.*;
+import models.Game;
 import models.User;
 import spark.Spark;
 
@@ -36,6 +37,11 @@ public class Server {
 
         //Initialize SQL
         try (var conn = getConnection()) {
+            //GET RID OF THIS CLEAR LATER
+            var clear = conn.prepareStatement("DROP DATABASE chess");
+            clear.executeUpdate();
+            Game.setGameIDIT(0);
+
             var createDbStatement = conn.prepareStatement("CREATE DATABASE IF NOT EXISTS chess");
             createDbStatement.executeUpdate();
 
@@ -68,12 +74,13 @@ public class Server {
 
             var createGAMETable = """
                     CREATE TABLE IF NOT EXISTS GAME (
-                    gameID INT NOT NULL AUTO_INCREMENT,
+                    ID INT NOT NULL AUTO_INCREMENT,
+                    gameID INT NOT NULL,
                     gamename VARCHAR(255) NOT NULL,
-                    whiteusername VARCHAR(255) NOT NULL,
-                    blackusername VARCHAR(255) NOT NULL,
-                    game VARCHAR(255) NOT NULL,
-                    PRIMARY KEY (gameID)
+                    whiteusername VARCHAR(255),
+                    blackusername VARCHAR(255),
+                    gamestring VARCHAR(255) NOT NULL,
+                    PRIMARY KEY (ID)
                     )""";
 
             try (var createTableStatement = conn.prepareStatement(createGAMETable)) {

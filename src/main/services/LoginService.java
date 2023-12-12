@@ -18,31 +18,34 @@ public class LoginService {
 
     /**
     logs the user into the server
-    @param LoginRequest r an object containing all request data
     @return LoginResponse an object containing all response data
      */
-    public LoginResponse login(LoginRequest r) throws DataAccessException {
+    public LoginResponse login(LoginRequest r) {
         LoginResponse loginResponse = new LoginResponse();
         UserDAO userDAO = new UserDAO();
         AuthDAO authDAO = new AuthDAO();
 
-        User user = userDAO.Find(r.getUsername());
+        try {
+            User user = userDAO.Find(r.getUsername());
 
-        if (user == null || !Objects.equals(user.getPassword(), r.getPassword())) {
-            loginResponse.setMessage("Error: unauthorized");
+            if (user == null || !Objects.equals(user.getPassword(), r.getPassword())) {
+                loginResponse.setMessage("Error: unauthorized");
+                return loginResponse;
+            }
+        } catch (DataAccessException e) {
+            loginResponse.setMessage(e.getMessage());
             return loginResponse;
         }
 
-//        for (AuthToken it : authDAO.FindAll()) {
-//            if (Objects.equals(it.getUsername(), r.getUsername())) {
-//                loginResponse.setMessage("Error: already logged in");
-//                return loginResponse;
-//            }
-//        }
-
         AuthToken authToken = new AuthToken();
         authToken.setUsername(r.getUsername());
-        authDAO.Insert(authToken);
+
+        try {
+            authDAO.Insert(authToken);
+        } catch (DataAccessException e) {
+            loginResponse.setMessage(e.getMessage());
+            return loginResponse;
+        }
 
         loginResponse.setAuthToken(authToken.getAuthToken());
         loginResponse.setUsername(r.getUsername());

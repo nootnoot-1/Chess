@@ -17,8 +17,19 @@ AuthToken Data Authentication Class. For connecting with the database for game i
 public class AuthDAO {
     static Database db = new Database();
 
+    public AuthDAO() {}
+
     public void Insert(AuthToken authToken) throws DataAccessException
     {
+        try {
+            Find(authToken.getAuthToken());
+            throw new DataAccessException("authToken is taken");
+        } catch (DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "authToken is taken")) {
+                throw new DataAccessException("authToken is taken");
+            }
+        }
+
         var conn = db.getConnection();
 
         try {
@@ -59,7 +70,6 @@ public class AuthDAO {
             throw new DataAccessException("AUTHTOKEN FIND ERROR");
             //throw new DataAccessException(e.getMessage());
         }
-
     }
 
     public AuthToken FindU(String uname) throws DataAccessException {
@@ -82,6 +92,27 @@ public class AuthDAO {
         } catch (SQLException e) {
             db.returnConnection(conn);
             throw new DataAccessException("AUTHTOKEN FINDU ERROR");
+            //throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    public String FindUsername(String authToken) throws DataAccessException
+    {
+        var conn = db.getConnection();
+        try (var preparedStatement = conn.prepareStatement("SELECT username FROM auth WHERE authToken=?")) {
+            preparedStatement.setString(1, authToken);
+            try (var rs = preparedStatement.executeQuery()) {
+                rs.next();
+                var username = rs.getString("username");
+
+                System.out.printf("username: %s \n", username);
+
+                db.returnConnection(conn);
+                return username;
+            }
+        } catch (SQLException e) {
+            db.returnConnection(conn);
+            throw new DataAccessException("AUTHTOKEN FINDUSERNAME ERROR");
             //throw new DataAccessException(e.getMessage());
         }
     }
@@ -115,6 +146,7 @@ public class AuthDAO {
 
     public void Remove(String authToken) throws DataAccessException
     {
+        Find(authToken);
         var conn = db.getConnection();
         try (var preparedStatement = conn.prepareStatement("DELETE FROM auth WHERE authToken=?")) {
             preparedStatement.setString(1,authToken);

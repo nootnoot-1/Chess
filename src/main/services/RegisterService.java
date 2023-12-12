@@ -15,10 +15,9 @@ public class RegisterService {
 
     /**
     registers a user into the server database
-    @param RegisterRequest r an object containing all request data
     @return RegisterResponse an object containing all response data
      */
-    public RegisterResponse register(RegisterRequest r) throws DataAccessException {
+    public RegisterResponse register(RegisterRequest r) {
         RegisterResponse registerResponse = new RegisterResponse();
         UserDAO userDAO = new UserDAO();
         AuthDAO authDAO = new AuthDAO();
@@ -28,26 +27,32 @@ public class RegisterService {
             registerResponse.setMessage("Error: bad request");
             return registerResponse;
         }
-        if (userDAO.Find(r.getUsername())!=null) {
+        try {
+            userDAO.Find(r.getUsername());
             registerResponse.setMessage("Error: already taken");
             return registerResponse;
-        }
+        } catch (DataAccessException ignored) {}
 
         //update database
-        AuthToken authToken = new AuthToken();
-        authToken.setUsername(r.getUsername());
-        authDAO.Insert(authToken);
+        try {
+            AuthToken authToken = new AuthToken();
+            authToken.setUsername(r.getUsername());
+            authDAO.Insert(authToken);
 
-        User user = new User();
-        user.setUsername(r.getUsername());
-        user.setPassword(r.getPassword());
-        user.setEmail(r.getEmail());
+            User user = new User();
+            user.setUsername(r.getUsername());
+            user.setPassword(r.getPassword());
+            user.setEmail(r.getEmail());
 
-        userDAO.Insert(user);
+            userDAO.Insert(user);
 
-        //fill in response
-        registerResponse.setUsername(r.getUsername());
-        registerResponse.setAuthToken(authToken.getAuthToken());
+            //fill in response
+            registerResponse.setUsername(r.getUsername());
+            registerResponse.setAuthToken(authToken.getAuthToken());
+        } catch (DataAccessException e) {
+            registerResponse.setMessage(e.getMessage());
+        }
+
 
         //String s = "username: " + registerResponse.getUsername() + ", authToken: " + authToken.getAuthToken(); //have constructor in response that takes in
 

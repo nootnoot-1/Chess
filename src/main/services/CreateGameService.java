@@ -15,15 +15,16 @@ public class CreateGameService {
 
     /**
     creates a game
-    @param CreateGameRequest r an object containing all request data
     @return CreateGameResponse an object containing all response data
      */
-    public CreateGameResponse createGame(CreateGameRequest r, String authToken) throws DataAccessException {
+    public CreateGameResponse createGame(CreateGameRequest r, String authToken) {
         CreateGameResponse createGameResponse = new CreateGameResponse();
         GameDAO gameDAO = new GameDAO();
         AuthDAO authDAO = new AuthDAO();
 
-        if (authDAO.Find(authToken) == null) {
+        try {
+            authDAO.Find(authToken);
+        } catch (DataAccessException e) {
             createGameResponse.setMessage("Error: unauthorized");
             return createGameResponse;
         }
@@ -31,15 +32,21 @@ public class CreateGameService {
             createGameResponse.setMessage("Error: bad request");
             return createGameResponse;
         }
-        if (gameDAO.FindGN(r.getGameName()) != null) {
+        try {
+            gameDAO.FindGN(r.getGameName());
             createGameResponse.setMessage("Error: game name already taken");
             return createGameResponse;
+        } catch (DataAccessException ignored) {}
+
+
+        try {
+            Game game = new Game(r.getGameName());
+            gameDAO.Insert(game);
+            createGameResponse.setGameID(game.getGameID());
+        } catch (DataAccessException e) {
+            createGameResponse.setMessage(e.getMessage());
+            return createGameResponse;
         }
-
-        Game game = new Game(r.getGameName());
-        gameDAO.Insert(game);
-
-        createGameResponse.setGameID(game.getGameID());
 
         return createGameResponse;
     }

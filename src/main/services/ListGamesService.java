@@ -14,20 +14,26 @@ public class ListGamesService {
 
     /**
     lists all games
-    @param ListGamesRequest r an object containing all request data
     @return ListGamesResponse an object containing all response data
      */
-    public ListGamesResponse listGames(String authToken) throws DataAccessException {
+    public ListGamesResponse listGames(String authToken) {
         ListGamesResponse listGamesResponse = new ListGamesResponse();
         GameDAO gameDAO = new GameDAO();
         AuthDAO authDAO = new AuthDAO();
 
-        if (authDAO.Find(authToken) == null) {
+        try {
+            authDAO.Find(authToken);
+        } catch (DataAccessException e) {
             listGamesResponse.setMessage("Error: unauthorized");
             return listGamesResponse;
         }
 
-        listGamesResponse.setGames(gameDAO.FindAll());
+        try {
+            listGamesResponse.setGames(gameDAO.FindAll());
+        } catch (DataAccessException e) {
+            listGamesResponse.setMessage(e.getMessage());
+            return listGamesResponse;
+        }
 
         return listGamesResponse;
     }

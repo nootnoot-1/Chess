@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Objects;
+
 /**
 Model class for Users, contains all necessary information that the server will need to know about a specific user
  */
@@ -21,6 +23,12 @@ public class User {
     User class constructor
      */
     public User() {}
+
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
 
     public String getUsername() {
         return username;
@@ -44,5 +52,22 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof User temp)) return false;
+        boolean flag = true;
+        if (!Objects.equals(temp.getUsername(), username)) {
+            flag = false;
+        }
+        if (!Objects.equals(temp.getPassword(), password)) {
+            flag = false;
+        }
+        if (!Objects.equals(temp.getEmail(), email)) {
+            flag = false;
+        }
+        return flag;
     }
 }

@@ -14,19 +14,22 @@ public class ClearApplicationService {
 
     /**
     clears the application
-    @param ClearApplicationRequest r an object containing all request data
     @return ClearApplicationResponse an object containing all response data
      */
-    public ClearApplicationResponse clearApplication() throws DataAccessException {
+    public ClearApplicationResponse clearApplication() {
         ClearApplicationResponse clearApplicationResponse = new ClearApplicationResponse();
 
         UserDAO userDAO = new UserDAO();
         AuthDAO authDAO = new AuthDAO();
         GameDAO gameDAO = new GameDAO();
 
-        userDAO.Clear();
-        authDAO.Clear();
-        gameDAO.Clear();
+        try {
+            userDAO.Clear();
+            authDAO.Clear();
+            gameDAO.Clear();
+        } catch (DataAccessException e) {
+            clearApplicationResponse.setMessage("Error: issue clearing database");
+        }
 
         return clearApplicationResponse;
     }

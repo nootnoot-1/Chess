@@ -3,6 +3,7 @@
 import chess.*;
 import com.google.gson.*;
 import dataAccess.DataAccessException;
+import dataAccess.GameDAO;
 import models.Game;
 import java.lang.reflect.Type;
 
@@ -10,21 +11,14 @@ import java.lang.reflect.Type;
 public class Main {
     public static void main(String[] args) {
 
-
-        Game game = null;
+        GameDAO gameDAO = new GameDAO();
+        Game game = new Game("GAMENAME3");
         try {
-            game = new Game("gameONE");
+            gameDAO.Insert(game);
+            gameDAO.Find(1);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(game.getGame().getBoard().toString());
-        String gamestring = game.getGame().serialize();
-        System.out.println(gamestring);
-
-        GameImpl repeatgame = deserialize(gamestring);
-        System.out.println(repeatgame.getBoard().toString());
-
-//        System.out.println(repeatgame.getBoard().toString());
 
     }
 

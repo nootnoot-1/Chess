@@ -1,5 +1,6 @@
 package services;
 
+import chess.ChessGame;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
@@ -16,39 +17,53 @@ public class JoinGameService {
 
     /**
     joins a game
-    @param JoinGameRequest r an object containing all request data
     @return JoinGameResponse an object containing all response data
      */
-    public JoinGameResponse joinGame(JoinGameRequest r, String authToken) throws DataAccessException {
+    public JoinGameResponse joinGame(JoinGameRequest r, String authToken) {
         JoinGameResponse joinGameResponse = new JoinGameResponse();
         GameDAO gameDAO = new GameDAO();
         AuthDAO authDAO = new AuthDAO();
 
-        if (authDAO.Find(authToken) == null) {
+        try {
+            authDAO.Find(authToken);
+        } catch (DataAccessException e) {
             joinGameResponse.setMessage("Error: unauthorized");
             return joinGameResponse;
         }
-        if (r.getGameID() < 0) {
+        if (r.getGameID() < 1) {
             joinGameResponse.setMessage("Error: bad request");
             return joinGameResponse;
         }
-//TODO should be finding if game ID is accurate somehow
-        Game game = gameDAO.Find(r.getGameID());
 
-        if (Objects.equals(r.getPlayerColor(), "BLACK")) {
-            if (game.getBlackUsername() != null) {
-                joinGameResponse.setMessage("Error: already taken");
+        if (r.getPlayerColor() != null) {
+            try {
+                gameDAO.ClaimSpot(authDAO.FindUsername(authToken), r.getGameID(), ChessGame.TeamColor.valueOf(r.getPlayerColor()));
+            } catch (DataAccessException e) {
+                joinGameResponse.setMessage(e.getMessage());
                 return joinGameResponse;
             }
-            game.setBlackUsername(authDAO.Find(authToken).getUsername());
         }
-        if (Objects.equals(r.getPlayerColor(), "WHITE")) {
-            if (game.getWhiteUsername() != null) {
-                joinGameResponse.setMessage("Error: already taken");
-                return joinGameResponse;
-            }
-            game.setWhiteUsername(authDAO.Find(authToken).getUsername());
-        }
+
+//        try {
+//            Game game = gameDAO.Find(r.getGameID());
+//            if (Objects.equals(r.getPlayerColor(), "BLACK")) {
+//                if (game.getBlackUsername() != null) {
+//                    joinGameResponse.setMessage("Error: already taken");
+//                    return joinGameResponse;
+//                }
+//                game.setBlackUsername(authDAO.Find(authToken).getUsername());
+//            }
+//            if (Objects.equals(r.getPlayerColor(), "WHITE")) {
+//                if (game.getWhiteUsername() != null) {
+//                    joinGameResponse.setMessage("Error: already taken");
+//                    return joinGameResponse;
+//                }
+//                game.setWhiteUsername(authDAO.Find(authToken).getUsername());
+//            }
+//        } catch (DataAccessException e) {
+//            joinGameResponse.setMessage(e.getMessage());
+//            return joinGameResponse;
+//        }
 
         return joinGameResponse;
     }

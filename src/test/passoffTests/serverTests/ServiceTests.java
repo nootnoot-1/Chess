@@ -123,7 +123,7 @@ public class ServiceTests {
 
         LoginResponse loginResponse = loginService.login(request);
 
-        assertEquals("Error: unauthorized", loginResponse.getMessage());
+        assertEquals("ERROR: no user registered with that username", loginResponse.getMessage());
     }
 
     @Test
@@ -200,7 +200,7 @@ public class ServiceTests {
         request2.setGameName("Room One");
         service2.createGame(request2, authDAO.FindU("collinlowree").getAuthToken());
 
-        request.setGameID(1000);
+        request.setGameID(1);
         request.setPlayerColor("BLACK");
 
         service.joinGame(request, authDAO.FindU("collinlowree").getAuthToken());

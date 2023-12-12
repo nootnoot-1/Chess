@@ -12,20 +12,26 @@ public class LogoutService {
 
     /**
     logs user out of the service
-    @param LogoutRequest r an object containing all request data
     @return LogoutResponse an object containing all response data
      */
-    public LogoutResponse logout(String authToken) throws DataAccessException {
+    public LogoutResponse logout(String authToken) {
         LogoutResponse logoutResponse = new LogoutResponse();
         UserDAO userDAO = new UserDAO();
         AuthDAO authDAO = new AuthDAO();
 
-        if (authDAO.Find(authToken) == null) {
+        try {
+            authDAO.Find(authToken);
+        } catch (DataAccessException e) {
             logoutResponse.setMessage("Error: unauthorized");
             return logoutResponse;
         }
 
-        authDAO.Remove(authToken);
+        try {
+            authDAO.Remove(authToken);
+        } catch (DataAccessException e) {
+            logoutResponse.setMessage(e.getMessage());
+            return logoutResponse;
+        }
 
         logoutResponse.setAuthToken(authToken);
 

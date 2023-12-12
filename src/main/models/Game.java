@@ -2,18 +2,21 @@ package models;
 
 import chess.BoardImpl;
 import chess.GameImpl;
+import chess.PositionImpl;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
+
+import java.util.Objects;
 
 /**
 Model class for Games, contains all necessary information a server will need to know about a specific game
  */
 public class Game {
-    static int gameIDIT;
     /**
     numerical identifier for specific game
      */
     private int gameID;
+    private static int gameIDIT;
     /**
     Username for the player playing white in this specific game
      */
@@ -34,18 +37,32 @@ public class Game {
     /**
     Constructor for game class
      */
-    public Game(String name) throws DataAccessException {
-        GameDAO gameDAO = new GameDAO();
-        gameID = gameIDIT + 1000;
-        ++gameIDIT;
+    public Game(String name) {
         gameName = name;
         game = new GameImpl();
         BoardImpl board = new BoardImpl();
         board.resetBoard();
         game.setBoard(board);
+        gameID = gameIDIT + 1;
+        gameIDIT++;
     }
 
-    public Game() {}
+//    public Game() {
+//        game = new GameImpl();
+//        BoardImpl board = new BoardImpl();
+//        board.resetBoard();
+//        game.setBoard(board);
+//        gameID = gameIDIT + 1;
+//        gameIDIT++;
+//    }
+
+    public static int getGameIDIT() {
+        return gameIDIT;
+    }
+
+    public static void setGameIDIT(int gameIDIT) {
+        Game.gameIDIT = gameIDIT;
+    }
 
     public int getGameID() {
         return gameID;
@@ -87,4 +104,26 @@ public class Game {
         this.game = game;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Game temp)) return false;
+        boolean flag = true;
+        if (!Objects.equals(temp.getGame().serialize(), this.getGame().serialize())) {
+            flag = false;
+        }
+        if (temp.getGameID() != gameID) {
+            flag = false;
+        }
+        if (!Objects.equals(temp.getBlackUsername(), blackUsername)) {
+            flag = false;
+        }
+        if (!Objects.equals(temp.getWhiteUsername(), whiteUsername)) {
+            flag = false;
+        }
+        if (!Objects.equals(temp.getGameName(), gameName)) {
+            flag = false;
+        }
+        return flag;
+    }
 }
