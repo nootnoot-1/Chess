@@ -11,14 +11,7 @@ import java.lang.reflect.Type;
 public class Main {
     public static void main(String[] args) {
 
-        GameDAO gameDAO = new GameDAO();
-        Game game = new Game("GAMENAME3");
-        try {
-            gameDAO.Insert(game);
-            gameDAO.Find(1);
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
-        }
+        System.out.println("SRC MAIN FILE?????");
 
     }
 
