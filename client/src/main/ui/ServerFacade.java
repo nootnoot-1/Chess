@@ -1,6 +1,9 @@
 package ui;
 
+import adapters.GameImplAdapter;
+import chess.GameImpl;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import models.Game;
 import request.*;
 import response.*;
@@ -44,15 +47,16 @@ public class ServerFacade {
             if (!Objects.equals(method, "GET")) {
                 http.setDoOutput(true);
             }
-            //http.setDoOutput(true);
+//            http.setDoOutput(true);
 
             if (authToken!= null) {
                 http.addRequestProperty("authorization", authToken);
             }
+
             if (!Objects.equals(method, "GET")) {
                 writeBody(request, http);
             }
-            //writeBody(request, http);
+//            writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
@@ -63,7 +67,10 @@ public class ServerFacade {
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
             http.addRequestProperty("Content-Type", "application/json");
-            String reqData = new Gson().toJson(request);
+            GsonBuilder gsonbuilder = new GsonBuilder();
+            gsonbuilder.registerTypeAdapter(GameImpl.class, new GameImplAdapter());
+            Gson gson = gsonbuilder.create();
+            String reqData = gson.toJson(request);
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }
@@ -74,15 +81,11 @@ public class ServerFacade {
         if (http.getContentLength() < 0) {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
-                if (responseClass != null && responseClass != ListGamesResponse.class) {
-                    response = new Gson().fromJson(reader, responseClass);
-                }
-                int t;
-                while((t=reader.read())!= -1)
-                {
-                    // convert the integer true to character
-                    char r = (char)t;
-                    System.out.println("Character : "+r);
+                if (responseClass != null) {
+                    GsonBuilder gsonbuilder = new GsonBuilder();
+                    gsonbuilder.registerTypeAdapter(GameImpl.class, new GameImplAdapter());
+                    Gson gson = gsonbuilder.create();
+                    response = gson.fromJson(reader, responseClass);
                 }
             }
         }

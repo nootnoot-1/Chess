@@ -1,6 +1,9 @@
 package handlers;
 
+import adapters.GameImplAdapter;
+import chess.GameImpl;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dataAccess.DataAccessException;
 import services.ListGamesService;
 import response.ListGamesResponse;
@@ -13,7 +16,9 @@ public class ListGamesHandler {
 
     public String handleRequest(Request request, Response response) throws DataAccessException {
         ListGamesService listGamesService = new ListGamesService();
-        Gson gson = new Gson();
+        GsonBuilder gsonbuilder = new GsonBuilder();
+        gsonbuilder.registerTypeAdapter(GameImpl.class, new GameImplAdapter());
+        Gson gson = gsonbuilder.create();
 
         ListGamesResponse listGamesResponse = listGamesService.listGames(request.headers("authorization"));
 

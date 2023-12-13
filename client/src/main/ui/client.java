@@ -1,14 +1,18 @@
 package ui;
 
+import adapters.GameImplAdapter;
 import chess.*;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import models.Game;
 import request.*;
 import response.ListGamesResponse;
 import response.RegisterResponse;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class client {
@@ -17,6 +21,19 @@ public class client {
         System.out.println("WELCOME TO CHESS");
         ServerFacade server = new ServerFacade("http://localhost:8080");
         loggedoutClient(server);
+
+//        GameImpl gameimpl = new GameImpl();
+//        BoardImpl board = new BoardImpl();
+//        board.resetBoard();
+//        gameimpl.setBoard(board);
+//        Game game = new Game("GANA");
+//
+//        GsonBuilder gsonbuilder = new GsonBuilder();
+//        gsonbuilder.registerTypeAdapter(GameImpl.class, new GameImplAdapter());
+//        Gson gson = gsonbuilder.create();
+//
+//        String json = gson.toJson(game);
+//        Game newgame = gson.fromJson(json, Game.class);
     }
     private static void loggedoutClient(ServerFacade server) {
         Scanner scanner = new Scanner(System.in);
@@ -149,70 +166,66 @@ public class client {
         return words;
     }
 
-    public static Gson createGsonDeserializer() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-
-        // This line should only be needed if your board class is using a Map to store chess pieces instead of a 2D array.
-        gsonBuilder.enableComplexMapKeySerialization();
-
-        gsonBuilder.registerTypeAdapter(ChessGame.class,
-                (JsonDeserializer<ChessGame>) (el, type, ctx) -> ctx.deserialize(el, GameImpl.class));
-
-        gsonBuilder.registerTypeAdapter(ChessBoard.class,
-                (JsonDeserializer<ChessBoard>) (el, type, ctx) -> ctx.deserialize(el, BoardImpl.class));
-
-        gsonBuilder.registerTypeAdapter(ChessPiece.class,
-                (JsonDeserializer<ChessPiece>) (el, type, ctx) -> ctx.deserialize(el, PieceImpl.class));
-
-        gsonBuilder.registerTypeAdapter(ChessMove.class,
-                (JsonDeserializer<ChessMove>) (el, type, ctx) -> ctx.deserialize(el, MoveImpl.class));
-
-        gsonBuilder.registerTypeAdapter(ChessPosition.class,
-                (JsonDeserializer<ChessPosition>) (el, type, ctx) -> ctx.deserialize(el, PositionImpl.class));
-
-        gsonBuilder.registerTypeAdapter(PieceImpl.class,
-                (JsonDeserializer<PieceImpl>) (el, type, ctx) -> {
-                    PieceImpl chessPiece = null;
-                    if (el.isJsonObject()) {
-                        String pieceType = el.getAsJsonObject().get("type").getAsString();
-                        switch (ChessPiece.PieceType.valueOf(pieceType)) {
-                            case PAWN -> chessPiece = ctx.deserialize(el, PawnImpl.class);
-                            case ROOK -> chessPiece = ctx.deserialize(el, RookImpl.class);
-                            case KNIGHT -> chessPiece = ctx.deserialize(el, KnightImpl.class);
-                            case BISHOP -> chessPiece = ctx.deserialize(el, BishopImpl.class);
-                            case QUEEN -> chessPiece = ctx.deserialize(el, QueenImpl.class);
-                            case KING -> chessPiece = ctx.deserialize(el, KingImpl.class);
-                        }
-                    }
-                    return chessPiece;
-                });
-
-        return gsonBuilder.create();
-    }
-
-    class PieceImpl implements ChessPiece {
-        ChessPiece.PieceType pieceType;
-        ChessGame.TeamColor teamColor;
-
-        public PieceImpl(PieceType pieceType, ChessGame.TeamColor teamColor) {
-            this.pieceType = pieceType;
-            this.teamColor = teamColor;
-        }
-
-        @Override
-        public ChessGame.TeamColor getTeamColor() {
-            return teamColor;
-        }
-
-        @Override
-        public PieceType getPieceType() {
-            return pieceType;
-        }
-
-        @Override
-        public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-            return null;
-        }
-    }
+//    //maybe switch some GameImpl to ChessGame?
+//    public static class GameImplAdapter extends TypeAdapter<GameImpl> {
+//
+//        @Override //making JSON
+//        public void write(JsonWriter jsonWriter, GameImpl gameimpl) throws IOException {
+//            //just use serialize method?
+//            String gamestring = gameimpl.serialize();
+//            jsonWriter.value(gamestring);
+//        }
+//
+//        @Override //making object JSON
+//        public GameImpl read(JsonReader reader) throws IOException {
+//            //turn jsonreader into a string, then just use deserialize method in GAMEDAO?
+//            if (reader.peek() == JsonToken.NULL) {
+//                reader.nextNull();
+//                return null;
+//            }
+//            String gamestring = reader.nextString(); //maybe nextstring?
+//            GameImpl gameimpl = new GameImpl();
+//            BoardImpl board = new BoardImpl();
+//
+//            if (gamestring.charAt(0) == 'W') {
+//                gameimpl.setTeamTurn(ChessGame.TeamColor.WHITE);
+//            } else {gameimpl.setTeamTurn(ChessGame.TeamColor.BLACK);}
+//
+//            for (int i=1; i<gamestring.length(); ++i) {
+//                PositionImpl position = new PositionImpl();
+//                position.setRow(gamestring.charAt(i)-48); ++i;
+//                position.setColumn(gamestring.charAt(i)-48); ++i;
+//                ChessPiece piece = null;
+//                if (gamestring.charAt(i) == 'K') {
+//                    piece = new KingImpl(ChessGame.TeamColor.WHITE);
+//                } else if (gamestring.charAt(i) == 'Q') {
+//                    piece = new QueenImpl(ChessGame.TeamColor.WHITE);
+//                } else if (gamestring.charAt(i) == 'B') {
+//                    piece = new BishopImpl(ChessGame.TeamColor.WHITE);
+//                } else if (gamestring.charAt(i) == 'N') {
+//                    piece = new KnightImpl(ChessGame.TeamColor.WHITE);
+//                } else if (gamestring.charAt(i) == 'R') {
+//                    piece = new RookImpl(ChessGame.TeamColor.WHITE);
+//                } else if (gamestring.charAt(i) == 'P') {
+//                    piece = new PawnImpl(ChessGame.TeamColor.WHITE);
+//                } else if (gamestring.charAt(i) == 'k') {
+//                    piece = new KingImpl(ChessGame.TeamColor.BLACK);
+//                } else if (gamestring.charAt(i) == 'q') {
+//                    piece = new QueenImpl(ChessGame.TeamColor.BLACK);
+//                } else if (gamestring.charAt(i) == 'b') {
+//                    piece = new BishopImpl(ChessGame.TeamColor.BLACK);
+//                } else if (gamestring.charAt(i) == 'n') {
+//                    piece = new KnightImpl(ChessGame.TeamColor.BLACK);
+//                } else if (gamestring.charAt(i) == 'r') {
+//                    piece = new RookImpl(ChessGame.TeamColor.BLACK);
+//                } else if (gamestring.charAt(i) == 'p') {
+//                    piece = new PawnImpl(ChessGame.TeamColor.BLACK);
+//                }
+//                board.addPiece(position,piece);
+//            }
+//            gameimpl.setBoard(board);
+//            return gameimpl;
+//        }
+//    }
 
 }

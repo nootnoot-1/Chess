@@ -111,7 +111,7 @@ public class GameDAO {
 
     public Collection<Game> FindAll() throws DataAccessException
     {
-        Collection<Game> gamiewamies = new HashSet<>();
+        Collection<Game> games = new HashSet<>();
         var conn = db.getConnection();
         try (var preparedStatement = conn.prepareStatement("SELECT gameID, gamestring, gamename, whiteusername, blackusername FROM game")) {
             try (var rs = preparedStatement.executeQuery()) {
@@ -131,7 +131,7 @@ public class GameDAO {
                     game.setWhiteUsername(whiteusername);
                     game.setBlackUsername(blackusername);
 
-                    gamiewamies.add(game);
+                    games.add(game);
                 }
             }
         } catch (SQLException e) {
@@ -140,7 +140,7 @@ public class GameDAO {
             //throw new DataAccessException(e.getMessage());
         }
         db.returnConnection(conn);
-        return gamiewamies;
+        return games;
     }
 
 
