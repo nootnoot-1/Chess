@@ -2,7 +2,6 @@ package dataAccess;
 
 import chess.*;
 import models.Game;
-import models.User;
 
 import java.sql.SQLException;
 import java.util.Collection;

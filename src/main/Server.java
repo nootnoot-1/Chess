@@ -1,8 +1,6 @@
 import dataAccess.DataAccessException;
-import dataAccess.UserDAO;
 import handlers.*;
 import models.Game;
-import models.User;
 import spark.Spark;
 
 import java.sql.Connection;

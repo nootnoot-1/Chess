@@ -3,12 +3,10 @@ package handlers;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import services.ListGamesService;
-import services.request.ListGamesRequest;
-import services.response.ListGamesResponse;
+import response.ListGamesResponse;
 import spark.Request;
 import spark.Response;
 
-import java.util.HashSet;
 import java.util.Objects;
 
 public class ListGamesHandler {

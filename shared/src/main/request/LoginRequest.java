@@ -1,4 +1,4 @@
-package services.request;
+package request;
 
 /**
 Request class for the Login service

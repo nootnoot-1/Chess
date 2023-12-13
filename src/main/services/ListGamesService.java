@@ -3,9 +3,7 @@ package services;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
-import models.Game;
-import services.request.ListGamesRequest;
-import services.response.ListGamesResponse;
+import response.ListGamesResponse;
 
 /**
 Service for HTTP request to list all games

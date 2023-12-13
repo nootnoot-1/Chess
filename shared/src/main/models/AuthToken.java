@@ -1,8 +1,5 @@
 package models;
 
-
-import dataAccess.AuthDAO;
-
 import java.util.Objects;
 import java.util.UUID;
 

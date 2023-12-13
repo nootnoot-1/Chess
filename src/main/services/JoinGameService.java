@@ -4,11 +4,8 @@ import chess.ChessGame;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
-import models.Game;
-import services.request.JoinGameRequest;
-import services.response.JoinGameResponse;
-
-import java.util.Objects;
+import request.JoinGameRequest;
+import response.JoinGameResponse;
 
 /**
 Service for HTTP request to join a game

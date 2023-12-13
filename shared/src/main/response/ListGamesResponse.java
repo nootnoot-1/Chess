@@ -1,9 +1,8 @@
-package services.response;
+package response;
 
 import models.Game;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
 Response class for the ListGames service

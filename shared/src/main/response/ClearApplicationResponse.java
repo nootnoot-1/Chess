@@ -1,4 +1,4 @@
-package services.response;
+package response;
 
 /**
 Response class for the clear application service

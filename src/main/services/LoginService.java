@@ -1,13 +1,12 @@
 package services;
 
-import com.mysql.cj.log.Log;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
 import models.AuthToken;
 import models.User;
-import services.request.LoginRequest;
-import services.response.LoginResponse;
+import request.LoginRequest;
+import response.LoginResponse;
 
 import java.util.Objects;
 

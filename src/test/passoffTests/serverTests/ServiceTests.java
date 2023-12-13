@@ -4,17 +4,15 @@ import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import dataAccess.UserDAO;
-import models.AuthToken;
 import models.User;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import request.CreateGameRequest;
+import request.JoinGameRequest;
+import request.LoginRequest;
+import request.RegisterRequest;
+import response.*;
 import services.*;
-import services.request.*;
-import services.response.*;
-
-import java.util.Collection;
-import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 

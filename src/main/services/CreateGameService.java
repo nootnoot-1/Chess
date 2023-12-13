@@ -4,9 +4,8 @@ import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import models.Game;
-import services.request.CreateGameRequest;
-import services.response.CreateGameResponse;
-import services.response.LogoutResponse;
+import request.CreateGameRequest;
+import response.CreateGameResponse;
 
 /**
 Service for HTTP request to create a game

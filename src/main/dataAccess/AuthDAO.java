@@ -1,12 +1,8 @@
 package dataAccess;
 
 import models.AuthToken;
-import models.User;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;

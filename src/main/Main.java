@@ -1,11 +1,6 @@
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 import chess.*;
-import com.google.gson.*;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
-import models.Game;
-import java.lang.reflect.Type;
 
 
 public class Main {

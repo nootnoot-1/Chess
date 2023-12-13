@@ -1,22 +1,28 @@
-package services.response;
+package response;
 
 /**
-Response class for the Logout service
+Response class for the Create Game service
  */
-public class LogoutResponse {
+public class CreateGameResponse {
     /**
     message for any errors that occur
      */
     private String message;
+
     /**
     authToken to verify user
      */
     private String authToken;
 
     /**
-    Logout class constructor
+    int used to indentify specific game
      */
-    public LogoutResponse() {}
+    private int gameID;
+
+    /**
+    Constructor for the CreateGameResponse class
+     */
+    public CreateGameResponse() {}
 
     public String getMessage() {
         return message;
@@ -32,5 +38,13 @@ public class LogoutResponse {
 
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
+    }
+
+    public int getGameID() {
+        return gameID;
+    }
+
+    public void setGameID(int gameID) {
+        this.gameID = gameID;
     }
 }

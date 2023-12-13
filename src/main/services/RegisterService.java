@@ -5,8 +5,8 @@ import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
 import models.AuthToken;
 import models.User;
-import services.request.RegisterRequest;
-import services.response.RegisterResponse;
+import request.RegisterRequest;
+import response.RegisterResponse;
 
 /**
 Service for HTTP request to register a user to the database

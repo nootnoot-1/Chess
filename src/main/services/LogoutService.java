@@ -3,7 +3,7 @@ package services;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
-import services.response.LogoutResponse;
+import response.LogoutResponse;
 
 /**
 Service for HTTP request to log out

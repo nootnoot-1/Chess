@@ -3,8 +3,7 @@ package handlers;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import services.ClearApplicationService;
-import services.request.ClearApplicationRequest;
-import services.response.ClearApplicationResponse;
+import response.ClearApplicationResponse;
 import spark.Request;
 import spark.Response;
 

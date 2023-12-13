@@ -4,8 +4,7 @@ import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import dataAccess.UserDAO;
-import services.request.ClearApplicationRequest;
-import services.response.ClearApplicationResponse;
+import response.ClearApplicationResponse;
 
 /**
 Service for HTTP request to clear the application

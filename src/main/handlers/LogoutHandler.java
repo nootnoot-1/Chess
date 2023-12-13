@@ -1,15 +1,12 @@
 package handlers;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import dataAccess.DataAccessException;
 import services.LogoutService;
-import services.request.LogoutRequest;
-import services.response.LogoutResponse;
+import response.LogoutResponse;
 import spark.Request;
 import spark.Response;
 
-import java.io.Reader;
 import java.util.Objects;
 
 public class LogoutHandler {

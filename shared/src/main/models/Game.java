@@ -2,9 +2,6 @@ package models;
 
 import chess.BoardImpl;
 import chess.GameImpl;
-import chess.PositionImpl;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
 
 import java.util.Objects;
 
