@@ -1,5 +1,12 @@
 package ui;
 
+import adapters.MoveAdapter;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.MoveImpl;
+import chess.PositionImpl;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import models.Game;
 import request.*;
 import response.JoinGameResponse;
@@ -22,6 +29,23 @@ public class client {
 //        game.setGame(gameImpl);
 //        Printer printer = new Printer();
 //        printer.printGame(game);
+
+//        PositionImpl startposition = new PositionImpl(1,2);
+//        PositionImpl endposition = new PositionImpl(5,6);
+//        MoveImpl move = new MoveImpl(startposition,endposition, ChessPiece.PieceType.ROOK);
+//        GsonBuilder gsonBuilder = new GsonBuilder();
+//        gsonBuilder.registerTypeAdapter(MoveImpl.class, new MoveAdapter());
+//        Gson gson = gsonBuilder.create();
+//        String json = gson.toJson(move);
+//        MoveImpl newmove = gson.fromJson(json, MoveImpl.class);
+//
+//        String moveString = "b7b6";
+//
+//        PositionImpl startpostition = new PositionImpl(moveString.charAt(0)-96, moveString.charAt(1)-48);
+//        PositionImpl endpostition = new PositionImpl(moveString.charAt(2)-96, moveString.charAt(3)-48);
+//
+//
+//        int i = 0;
     }
     private static void loggedoutClient(ServerFacade server) {
         Scanner scanner = new Scanner(System.in);

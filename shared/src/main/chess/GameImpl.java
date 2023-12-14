@@ -258,5 +258,84 @@ public class GameImpl implements ChessGame{
         return copyBoard;
     }
 
+    public BoardImpl makeMoveNEW(ChessMove move) throws InvalidMoveException {
+        BoardImpl oldBoard = copyBoard(gameBoard);
+        Collection<ChessMove> moves = gameBoard.getPiece(move.getStartPosition()).pieceMoves(gameBoard,move.getStartPosition());
+        if (!moves.contains(move)) {
+            throw new InvalidMoveException();
+        } else if (teamturn != gameBoard.getPiece(move.getStartPosition()).getTeamColor()) {
+            throw new InvalidMoveException();
+        }
+        if (gameBoard.getPiece(move.getEndPosition()) == null) {
+            if (move.getPromotionPiece() == null) {
+                gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
+                gameBoard.removePiece(move.getStartPosition());
+            } else {
+                if (move.getPromotionPiece() == ChessPiece.PieceType.QUEEN) {
+                    QueenImpl queen = new QueenImpl(teamturn);
+                    gameBoard.addPiece(move.getEndPosition(), queen);
+                    gameBoard.removePiece(move.getStartPosition());
+                }
+                if (move.getPromotionPiece() == ChessPiece.PieceType.ROOK) {
+                    RookImpl rook = new RookImpl(teamturn);
+                    gameBoard.addPiece(move.getEndPosition(), rook);
+                    gameBoard.removePiece(move.getStartPosition());
+                }
+                if (move.getPromotionPiece() == ChessPiece.PieceType.BISHOP) {
+                    BishopImpl bishop = new BishopImpl(teamturn);
+                    gameBoard.addPiece(move.getEndPosition(), bishop);
+                    gameBoard.removePiece(move.getStartPosition());
+                }
+                if (move.getPromotionPiece() == ChessPiece.PieceType.KNIGHT) {
+                    KnightImpl knight = new KnightImpl(teamturn);
+                    gameBoard.addPiece(move.getEndPosition(), knight);
+                    gameBoard.removePiece(move.getStartPosition());
+                }
+            }
+        } else {
+            gameBoard.removePiece(move.getEndPosition());
+            if (move.getPromotionPiece() == null) {
+                gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
+            } else {
+                if (move.getPromotionPiece() == ChessPiece.PieceType.QUEEN) {
+                    QueenImpl queen = new QueenImpl(teamturn);
+                    gameBoard.addPiece(move.getEndPosition(), queen);
+                }
+                if (move.getPromotionPiece() == ChessPiece.PieceType.ROOK) {
+                    RookImpl rook = new RookImpl(teamturn);
+                    gameBoard.addPiece(move.getEndPosition(), rook);
+                }
+                if (move.getPromotionPiece() == ChessPiece.PieceType.BISHOP) {
+                    BishopImpl bishop = new BishopImpl(teamturn);
+                    gameBoard.addPiece(move.getEndPosition(), bishop);
+                }
+                if (move.getPromotionPiece() == ChessPiece.PieceType.KNIGHT) {
+                    KnightImpl knight = new KnightImpl(teamturn);
+                    gameBoard.addPiece(move.getEndPosition(), knight);
+                }
+            }
+            gameBoard.removePiece(move.getStartPosition());
+        }
+
+        if (isInCheck(teamturn)) {
+            gameBoard = oldBoard;
+            throw new InvalidMoveException();
+        }
+
+        if (teamturn == TeamColor.WHITE) {
+            setTeamTurn(TeamColor.BLACK);
+        } else {
+            setTeamTurn(TeamColor.WHITE);
+        }
+        return gameBoard;
+    }
+
+//    public void toggleturn() {
+//        if (teamturn == TeamColor.WHITE) {
+//            teamturn = TeamColor.BLACK;
+//        } else {
+//            teamturn = TeamColor.WHITE;
+//        }
+//    }
 
 }

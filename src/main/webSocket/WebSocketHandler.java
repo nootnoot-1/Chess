@@ -1,8 +1,8 @@
 package webSocket;
 
 import adapters.GameImplAdapter;
-import chess.ChessGame;
-import chess.GameImpl;
+import adapters.MoveAdapter;
+import chess.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dataAccess.AuthDAO;
@@ -18,19 +18,31 @@ import webSocketMessages.userCommands.UserGameCommand;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 @WebSocket
 public class WebSocketHandler {
-    Collection<Contact> contacts = new HashSet<>();
+    ConcurrentHashMap<String, Contact> contacts = new ConcurrentHashMap<>();
     GameDAO gameDAO = new GameDAO();
     AuthDAO authDAO = new AuthDAO();
-    String username;
+
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
-        UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+        GsonBuilder gsonbuilder = new GsonBuilder();
+        gsonbuilder.registerTypeAdapter(GameImpl.class, new GameImplAdapter());
+        gsonbuilder.registerTypeAdapter(ChessMove.class, new MoveAdapter());
+        Gson gson = gsonbuilder.create();
+        UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
+        int gameID = command.getGameID();
+        String authToken = command.getAuthString();
+        ChessGame.TeamColor teamColor = command.getPlayerColor();
+        ChessMove move = command.getMove();
+
+        //CHECK AUTH TOKEN
         try {
-            username = authDAO.Find(command.getAuthString()).getUsername();
+            authDAO.Find(command.getAuthString());
         } catch (DataAccessException e) {
             ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
             error.setErrorMessage(e.getMessage());
@@ -39,102 +51,145 @@ public class WebSocketHandler {
         }
 
         if (command.getCommandType() == UserGameCommand.CommandType.JOIN_OBSERVER) {
-            boolean flag = true;
-            try {
-                gameDAO.Find(command.getGameID());
-            } catch (DataAccessException e) {
-                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                error.setErrorMessage(e.getMessage());
-                session.getRemote().sendString(new Gson().toJson(error));
-                flag = false;
-            }
-            if (flag) {
-                Contact contact = new Contact(session, command.getGameID(), username);
-                contacts.add(contact);
+            joinObserver(authToken, session, gameID);
+        } else if (command.getCommandType() == UserGameCommand.CommandType.JOIN_PLAYER) {
+            joinPlayer(authToken, session, gameID, teamColor);
+        } else if (command.getCommandType() == UserGameCommand.CommandType.LEAVE) {
+            leave(authToken, session, gameID, teamColor);
+        } else if (command.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE) {
+            makeMove(authToken, session, gameID, move);
+        }
+    }
 
-                ServerMessage loadgame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-                Game game = gameDAO.Find(command.getGameID());
-                loadgame.setGame(game);
+    private void joinObserver(String authToken, Session session, int gameID) throws Exception {
+        String username = authDAO.FindUsername(authToken);
 
-                GsonBuilder gsonbuilder = new GsonBuilder();
-                gsonbuilder.registerTypeAdapter(GameImpl.class, new GameImplAdapter());
-                Gson gson = gsonbuilder.create();
-                session.getRemote().sendString(gson.toJson(loadgame));
+        // CHECK FOR GAME ID IN DATABASE
+        try {
+            gameDAO.Find(gameID);
+        } catch (DataAccessException e) {
+            ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            error.setErrorMessage(e.getMessage());
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }
+        Contact contact = new Contact(session, gameID, username);
+        contacts.put(username,contact);
 
-                ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                notification.setMessage(username + " has joined as an observer");
+        ServerMessage loadgame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        Game game = gameDAO.Find(gameID);
+        loadgame.setGame(game);
 
-                for (Contact it : contacts) {
-                    if (!Objects.equals(it.username, username)) {
-                        it.send(gson.toJson(notification));
-                    }
-                }
+        GsonBuilder gsonbuilder = new GsonBuilder();
+        gsonbuilder.registerTypeAdapter(GameImpl.class, new GameImplAdapter());
+        Gson gson = gsonbuilder.create();
+        session.getRemote().sendString(gson.toJson(loadgame));
+
+        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        notification.setMessage(username + " has joined as an observer");
+
+        for (Map.Entry<String, Contact> set : contacts.entrySet()) {
+            if (!Objects.equals(set.getKey(), username)) {
+                set.getValue().send(gson.toJson(notification));
             }
         }
+    }
+    private void joinPlayer(String authToken, Session session, int gameID, ChessGame.TeamColor teamColor) throws Exception {
+        String username = authDAO.FindUsername(authToken);
 
-        else if (command.getCommandType() == UserGameCommand.CommandType.JOIN_PLAYER) {
-            boolean flag = true;
-            try {
-                gameDAO.Find(command.getGameID());
-            } catch (DataAccessException e) {
-                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                error.setErrorMessage(e.getMessage());
-                session.getRemote().sendString(new Gson().toJson(error));
-                flag = false;
-            }
-            if ((command.getPlayerColor() == ChessGame.TeamColor.WHITE && !Objects.equals(gameDAO.Find(command.getGameID()).getWhiteUsername(), username)) || (command.getPlayerColor() == ChessGame.TeamColor.BLACK && !Objects.equals(gameDAO.Find(command.getGameID()).getBlackUsername(), username))) {
-                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                error.setErrorMessage("spot is already claimed");
-                session.getRemote().sendString(new Gson().toJson(error));
-            }
-
-            else if (flag){
-                Contact contact = new Contact(session, command.getGameID(), username);
-                contacts.add(contact);
-
-                ServerMessage loadgame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-                Game game = gameDAO.Find(command.getGameID());
-                loadgame.setGame(game);
-
-                GsonBuilder gsonbuilder = new GsonBuilder();
-                gsonbuilder.registerTypeAdapter(GameImpl.class, new GameImplAdapter());
-                Gson gson = gsonbuilder.create();
-                session.getRemote().sendString(gson.toJson(loadgame));
-
-                ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                notification.setMessage(username + " has joined as a player");
-
-                for (Contact it : contacts) {
-                    if (!Objects.equals(it.username, username)) {
-                        it.send(gson.toJson(notification));
-                    }
-                }
-            }
+        // CHECK FOR GAME ID IN DATABASE
+        try {
+            gameDAO.Find(gameID);
+        } catch (DataAccessException e) {
+            ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            error.setErrorMessage(e.getMessage());
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
         }
 
-        else if (command.getCommandType() == UserGameCommand.CommandType.LEAVE) {
-            Game game = gameDAO.Find(command.getGameID());
-            ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            if (command.getPlayerColor() == ChessGame.TeamColor.WHITE) {
-                gameDAO.LeaveSpot(command.getGameID(), ChessGame.TeamColor.WHITE);
-                notification.setMessage(username + " has left the game");
-                contacts.removeIf(it -> Objects.equals(it.username, username));
-            } else if (command.getPlayerColor() == ChessGame.TeamColor.BLACK) {
-                gameDAO.LeaveSpot(command.getGameID(), ChessGame.TeamColor.BLACK);
-                notification.setMessage(username + " has left the game");
-                contacts.removeIf(it -> Objects.equals(it.username, username));
-            } else {
-//                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-//                error.setErrorMessage("invalid leave?");
-//                session.getRemote().sendString(new Gson().toJson(error));
-//                return;
-                notification.setMessage(username + " has left the game");
-                contacts.removeIf(it -> Objects.equals(it.username, username));
+        // CHECK FOR WRONG SPOT
+        if ((teamColor == ChessGame.TeamColor.WHITE && !Objects.equals(gameDAO.Find(gameID).getWhiteUsername(), username)) || (teamColor == ChessGame.TeamColor.BLACK && !Objects.equals(gameDAO.Find(gameID).getBlackUsername(), username))) {
+            ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            error.setErrorMessage("spot is already claimed");
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }
+
+        Contact contact = new Contact(session, gameID, username);
+        contacts.put(username, contact);
+
+        ServerMessage loadgame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        Game game = gameDAO.Find(gameID);
+        loadgame.setGame(game);
+
+        GsonBuilder gsonbuilder = new GsonBuilder();
+        gsonbuilder.registerTypeAdapter(GameImpl.class, new GameImplAdapter());
+        Gson gson = gsonbuilder.create();
+        session.getRemote().sendString(gson.toJson(loadgame));
+
+        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        notification.setMessage(username + " has joined as a player");
+
+        for (Map.Entry<String, Contact> set : contacts.entrySet()) {
+            if (!Objects.equals(set.getKey(), username)) {
+                set.getValue().send(gson.toJson(notification));
             }
-            for (Contact it : contacts) {
-                if (!Objects.equals(it.username, username)) {
-                    it.send(new Gson().toJson(notification));
-                }
+        }
+    }
+    private void leave(String authToken, Session session, int gameID, ChessGame.TeamColor teamColor) throws Exception {
+        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        String username = authDAO.FindUsername(authToken);
+
+        if (teamColor == ChessGame.TeamColor.WHITE) {
+            gameDAO.LeaveSpot(gameID, ChessGame.TeamColor.WHITE);
+            notification.setMessage(username + " has left the game");
+            contacts.remove(username);
+        } else if (teamColor == ChessGame.TeamColor.BLACK) {
+            gameDAO.LeaveSpot(gameID, ChessGame.TeamColor.BLACK);
+            notification.setMessage(username + " has left the game");
+            contacts.remove(username);
+        } else {
+            notification.setMessage(username + " has stopped observing the game");
+            contacts.remove(username);
+        }
+        for (Map.Entry<String, Contact> set : contacts.entrySet()) {
+            if (!Objects.equals(set.getKey(), username)) {
+                set.getValue().send(new Gson().toJson(notification));
+            }
+        }
+    }
+    private void makeMove(String authToken, Session session, int gameID, ChessMove move) throws Exception {
+        String username = authDAO.FindUsername(authToken);
+
+        // CHECK FOR GAME ID IN DATABASE
+        try {
+            gameDAO.Find(gameID);
+        } catch (DataAccessException e) {
+            ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            error.setErrorMessage(e.getMessage());
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }
+
+        //MAKE GSON FOR GAME
+        GsonBuilder gsonbuilder = new GsonBuilder();
+        gsonbuilder.registerTypeAdapter(GameImpl.class, new GameImplAdapter());
+        gsonbuilder.registerTypeAdapter(ChessMove.class, new MoveAdapter());
+        Gson gson = gsonbuilder.create();
+
+        Game game = gameDAO.Find(gameID);
+        game.getGame().makeMoveNEW(move);
+
+        ServerMessage loadgame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        loadgame.setGame(game);
+        session.getRemote().sendString(gson.toJson(loadgame));
+
+        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        notification.setMessage(username + " made a move");
+
+        for (Map.Entry<String, Contact> set : contacts.entrySet()) {
+            if (!Objects.equals(set.getKey(), username)) {
+                set.getValue().send(new Gson().toJson(notification));
             }
         }
     }
