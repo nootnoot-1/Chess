@@ -13,6 +13,7 @@ import java.util.Objects;
 public class ServerMessage {
     ServerMessageType serverMessageType;
     private Game game;
+    private String message;
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -34,6 +35,14 @@ public class ServerMessage {
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public String getNotificationMessage() {
+        return message;
+    }
+
+    public void setNotificationMessage(String notificationMessage) {
+        this.message = notificationMessage;
     }
 
     @Override
