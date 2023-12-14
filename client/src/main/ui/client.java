@@ -1,19 +1,9 @@
 package ui;
 
-import adapters.GameImplAdapter;
-import chess.*;
-import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 import models.Game;
 import request.*;
 import response.JoinGameResponse;
 import response.ListGamesResponse;
-import response.RegisterResponse;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.*;
 
 public class client {
@@ -120,14 +110,17 @@ public class client {
                 request.setPlayerColor(input[2]);
                 try {
                     JoinGameResponse response = server.joinGame(request, authToken);
-                    if (response.getMessage() == null) {
-                        System.out.println("observing game");
-                        printer.printGame(response.getGame());
+                    if (response.getMessage() == null) { //for phase 5 passoff remove websocket
+                        System.out.println("joining game");
+                        WebSocket.run();
+                        //printer.printGame(response.getGame());
                     } else {
                         System.out.println("no game with that ID");
                     }
                 } catch (ServerFacade.ResponseException e) {
                     System.out.println(e.getMessage());
+                } catch (Exception e) {
+                    System.out.println("WEBBY BEBBY ERROR" + e);
                 }
             }
 
@@ -136,14 +129,17 @@ public class client {
                 request.setGameID(Integer.parseInt(input[1]));
                 try {
                     JoinGameResponse response = server.joinGame(request, authToken);
-                    if (response.getMessage() == null) {
+                    if (response.getMessage() == null) { //for phase 5 passoff remove websocket
                         System.out.println("observing game");
-                        printer.printGame(response.getGame());
+                        WebSocket.run();
+                        //printer.printGame(response.getGame());
                     } else {
                         System.out.println("no game with that ID");
                     }
                 } catch (ServerFacade.ResponseException e) {
                     System.out.println(e.getMessage());
+                } catch (Exception e) {
+                    System.out.println("WEBBY BEBBY ERROR" + e);
                 }
             }
 
@@ -195,12 +191,6 @@ public class client {
                 System.out.println("invalid input, type \"help\" for what you can do <3");
             }
         }
-    }
-    private static void observingClient() {
-
-    }
-    private static void playingClient() {
-
     }
     private static String[] parseInput(String input) {
         String[] words = input.split("\\s+");

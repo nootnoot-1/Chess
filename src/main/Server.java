@@ -1,6 +1,8 @@
 import dataAccess.DataAccessException;
 import handlers.*;
 import models.Game;
+import webSocket.WebSocketHandler;
+
 import spark.Spark;
 
 import java.sql.Connection;
@@ -22,6 +24,7 @@ public class Server {
 
     public static void run() throws DataAccessException {
         Spark.port(8080);
+        Spark.webSocket("/connect", WebSocketHandler.class);
 
         Spark.externalStaticFileLocation("web");
 
