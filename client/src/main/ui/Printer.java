@@ -4,6 +4,7 @@ import chess.BoardImpl;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.PositionImpl;
+import com.sun.tools.jconsole.JConsoleContext;
 import models.Game;
 
 import java.util.Map;
@@ -13,13 +14,16 @@ public class Printer {
     public void printGame(Game game) {
         BoardImpl boardImpl = (BoardImpl) game.getGame().getBoard();
         makeReverseString(boardImpl.getBoard());
-        System.out.println(EscapeSequences.SET_BG_COLOR_MAGENTA);
+        System.out.print(EscapeSequences.SET_BG_COLOR_MAGENTA + "                              ");
+        System.out.println("\033[0m");
         makeString(boardImpl.getBoard());
+        System.out.print("\033[0m");
     }
 
     public void makeString(Map<PositionImpl,ChessPiece> board){
         System.out.print("\u001b[35;100m");
-        System.out.println("    a  b  c  d  e  f  g  h    ");
+        System.out.print("    a  b  c  d  e  f  g  h    ");
+        System.out.println("\033[0m");
         for (int i = 8; i > 0; --i) {
             System.out.print("\u001b[35;100m");
             System.out.print(" "+i+" ");
@@ -46,14 +50,16 @@ public class Printer {
             }
             System.out.print("\u001b[35;100m");
             System.out.print(" "+i+" ");
-            System.out.print("\n");
+            System.out.println("\033[0m");
         }
         System.out.print("\u001b[35;100m");
-        System.out.println("    a  b  c  d  e  f  g  h    ");
+        System.out.print("    a  b  c  d  e  f  g  h    ");
+        System.out.println("\033[0m");
     }
     public void makeReverseString(Map<PositionImpl,ChessPiece> board){
         System.out.print("\u001b[35;100m");
-        System.out.println("    h  g  f  e  d  c  b  a    ");
+        System.out.print("    h  g  f  e  d  c  b  a    ");
+        System.out.println("\033[0m");
         for (int i = 1; i < 9; ++i) {
             System.out.print("\u001b[35;100m");
             System.out.print(" "+(i)+" ");
@@ -80,10 +86,11 @@ public class Printer {
             }
             System.out.print("\u001b[35;100m");
             System.out.print(" "+(i)+" ");
-            System.out.print("\n");
+            System.out.println("\033[0m");
         }
         System.out.print("\u001b[35;100m");
-        System.out.println("    h  g  f  e  d  c  b  a    ");
+        System.out.print("    h  g  f  e  d  c  b  a    ");
+        System.out.println("\033[0m");
     }
 
     private void toStringHelper(ChessPiece.PieceType type, ChessGame.TeamColor color) {

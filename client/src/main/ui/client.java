@@ -18,7 +18,7 @@ import java.util.*;
 
 public class client {
     private static String authToken;
-    private static Printer printer;
+    private static final Printer printer = new Printer();
     public static void main(String[] args) {
         System.out.println("WELCOME TO CHESS");
         ServerFacade server = new ServerFacade("http://localhost:8080");
@@ -119,9 +119,13 @@ public class client {
                 request.setGameID(Integer.parseInt(input[1]));
                 request.setPlayerColor(input[2]);
                 try {
-                    server.joinGame(request, authToken);
-                    System.out.println("joined game");
-                    printer.printGame();
+                    JoinGameResponse response = server.joinGame(request, authToken);
+                    if (response.getMessage() == null) {
+                        System.out.println("observing game");
+                        printer.printGame(response.getGame());
+                    } else {
+                        System.out.println("no game with that ID");
+                    }
                 } catch (ServerFacade.ResponseException e) {
                     System.out.println(e.getMessage());
                 }
@@ -131,8 +135,13 @@ public class client {
                 JoinGameRequest request = new JoinGameRequest();
                 request.setGameID(Integer.parseInt(input[1]));
                 try {
-                    server.joinGame(request, authToken);
-                    System.out.println("observing game");
+                    JoinGameResponse response = server.joinGame(request, authToken);
+                    if (response.getMessage() == null) {
+                        System.out.println("observing game");
+                        printer.printGame(response.getGame());
+                    } else {
+                        System.out.println("no game with that ID");
+                    }
                 } catch (ServerFacade.ResponseException e) {
                     System.out.println(e.getMessage());
                 }

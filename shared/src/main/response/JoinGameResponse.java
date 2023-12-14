@@ -1,5 +1,7 @@
 package response;
 
+import models.Game;
+
 /**
 Response class for the JoinGame service
  */
@@ -16,6 +18,16 @@ public class JoinGameResponse {
     int to identify the game that is being joined
      */
     private String gameID;
+
+    private Game game;
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
 
     /**
     JoinGameResponse class constructor

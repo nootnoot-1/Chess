@@ -32,6 +32,13 @@ public class JoinGameService {
             return joinGameResponse;
         }
 
+        try {
+            joinGameResponse.setGame(gameDAO.Find(r.getGameID()));
+        } catch (DataAccessException e) {
+            joinGameResponse.setMessage(e.getMessage());
+            return joinGameResponse;
+        }
+
         if (r.getPlayerColor() != null) {
             try {
                 gameDAO.ClaimSpot(authDAO.FindUsername(authToken), r.getGameID(), ChessGame.TeamColor.valueOf(r.getPlayerColor()));
@@ -40,27 +47,6 @@ public class JoinGameService {
                 return joinGameResponse;
             }
         }
-
-//        try {
-//            Game game = gameDAO.Find(r.getGameID());
-//            if (Objects.equals(r.getPlayerColor(), "BLACK")) {
-//                if (game.getBlackUsername() != null) {
-//                    joinGameResponse.setMessage("Error: already taken");
-//                    return joinGameResponse;
-//                }
-//                game.setBlackUsername(authDAO.Find(authToken).getUsername());
-//            }
-//            if (Objects.equals(r.getPlayerColor(), "WHITE")) {
-//                if (game.getWhiteUsername() != null) {
-//                    joinGameResponse.setMessage("Error: already taken");
-//                    return joinGameResponse;
-//                }
-//                game.setWhiteUsername(authDAO.Find(authToken).getUsername());
-//            }
-//        } catch (DataAccessException e) {
-//            joinGameResponse.setMessage(e.getMessage());
-//            return joinGameResponse;
-//        }
 
         return joinGameResponse;
     }
