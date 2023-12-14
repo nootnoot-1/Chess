@@ -34,8 +34,15 @@ public class UserGameCommand {
 
     private final String authToken;
     private final int gameID;
-    private ChessGame.TeamColor color;
+    private ChessGame.TeamColor playerColor;
 
+    public ChessGame.TeamColor getPlayerColor() {
+        return playerColor;
+    }
+
+    public void setPlayerColor(ChessGame.TeamColor playerColor) {
+        this.playerColor = playerColor;
+    }
 
     public String getAuthString() {
         return authToken;

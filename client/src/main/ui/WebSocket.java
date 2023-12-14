@@ -27,17 +27,20 @@ public class WebSocket extends Endpoint{
 
         if (Objects.equals(teamcolor, "WHITE")) {
             teamColor = ChessGame.TeamColor.WHITE;
-            gameViewClient(ws,scanner,teamcolor,authToken,gameID);
+            gameViewClient(ws,scanner,authToken,gameID);
         } else if (Objects.equals(teamcolor, "BLACK")) {
             teamColor = ChessGame.TeamColor.BLACK;
-            gameViewClient(ws,scanner,teamcolor,authToken,gameID);
+            gameViewClient(ws,scanner,authToken,gameID);
         } else {
             observeClient(ws,scanner,authToken,gameID);
         }
     }
 
-    private static void gameViewClient(WebSocket ws, Scanner scanner, String teamcolor, String authToken, int gameID) throws Exception {
-
+    private static void gameViewClient(WebSocket ws, Scanner scanner, String authToken, int gameID) throws Exception {
+        UserGameCommand command = new UserGameCommand(authToken, gameID, UserGameCommand.CommandType.JOIN_PLAYER);
+        command.setPlayerColor(teamColor);
+        String json = new Gson().toJson(command);
+        ws.send(json);
         while (true) { // this is where we do the work?
             System.out.print("[GAMIN] >>> ");
             String temp = scanner.nextLine();
@@ -109,6 +112,14 @@ public class WebSocket extends Endpoint{
 
                 if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
                     printer.printGame(serverMessage.getGame(), teamColor);
+                    System.out.print("[GAMEVIEW] >>> ");
+                }
+                if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+                    System.out.println(serverMessage.getMessage());
+                    System.out.print("[GAMEVIEW] >>> ");
+                }
+                if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+                    System.out.println(serverMessage.getMessage());
                     System.out.print("[GAMEVIEW] >>> ");
                 }
             }
