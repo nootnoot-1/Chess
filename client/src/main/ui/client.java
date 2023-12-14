@@ -112,7 +112,7 @@ public class client {
                     JoinGameResponse response = server.joinGame(request, authToken);
                     if (response.getMessage() == null) { //for phase 5 passoff remove websocket
                         System.out.println("joining game");
-                        WebSocket.run();
+                        WebSocket.run(input[2], authToken, Integer.parseInt(input[1]));
                         //printer.printGame(response.getGame());
                     } else {
                         System.out.println("no game with that ID");
@@ -131,7 +131,7 @@ public class client {
                     JoinGameResponse response = server.joinGame(request, authToken);
                     if (response.getMessage() == null) { //for phase 5 passoff remove websocket
                         System.out.println("observing game");
-                        WebSocket.run();
+                        WebSocket.run( null, authToken, Integer.parseInt(input[1]));
                         //printer.printGame(response.getGame());
                     } else {
                         System.out.println("no game with that ID");

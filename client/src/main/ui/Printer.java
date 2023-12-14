@@ -8,15 +8,19 @@ import com.sun.tools.jconsole.JConsoleContext;
 import models.Game;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class Printer {
 
-    public void printGame(Game game) {
+    public void printGame(Game game, ChessGame.TeamColor teamcolor) {
         BoardImpl boardImpl = (BoardImpl) game.getGame().getBoard();
-        makeReverseString(boardImpl.getBoard());
-        System.out.print(EscapeSequences.SET_BG_COLOR_MAGENTA + "                              ");
-        System.out.println("\033[0m");
-        makeString(boardImpl.getBoard());
+        if (teamcolor == ChessGame.TeamColor.BLACK) {
+            makeReverseString(boardImpl.getBoard());
+        } else {
+            makeString(boardImpl.getBoard());
+        }
+        //System.out.print(EscapeSequences.SET_BG_COLOR_MAGENTA + "                              ");
+        //System.out.println("\033[0m");
         System.out.print("\033[0m");
     }
 
