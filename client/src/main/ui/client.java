@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import models.Game;
 import request.*;
+import response.JoinGameResponse;
 import response.ListGamesResponse;
 import response.RegisterResponse;
 
@@ -17,23 +18,20 @@ import java.util.*;
 
 public class client {
     private static String authToken;
+    private static Printer printer;
     public static void main(String[] args) {
         System.out.println("WELCOME TO CHESS");
         ServerFacade server = new ServerFacade("http://localhost:8080");
         loggedoutClient(server);
 
-//        GameImpl gameimpl = new GameImpl();
-//        BoardImpl board = new BoardImpl();
-//        board.resetBoard();
-//        gameimpl.setBoard(board);
-//        Game game = new Game("GANA");
-//
-//        GsonBuilder gsonbuilder = new GsonBuilder();
-//        gsonbuilder.registerTypeAdapter(GameImpl.class, new GameImplAdapter());
-//        Gson gson = gsonbuilder.create();
-//
-//        String json = gson.toJson(game);
-//        Game newgame = gson.fromJson(json, Game.class);
+//        Game game = new Game("game1");
+//        GameImpl gameImpl = new GameImpl();
+//        BoardImpl boardImpl = new BoardImpl();
+//        boardImpl.resetBoard();
+//        gameImpl.setBoard(boardImpl);
+//        game.setGame(gameImpl);
+//        Printer printer = new Printer();
+//        printer.printGame(game);
     }
     private static void loggedoutClient(ServerFacade server) {
         Scanner scanner = new Scanner(System.in);
@@ -116,6 +114,30 @@ public class client {
                 System.out.println("help - with possible commands");
             }
 
+            else if (Objects.equals(input[0], "join") && input.length == 3) {
+                JoinGameRequest request = new JoinGameRequest();
+                request.setGameID(Integer.parseInt(input[1]));
+                request.setPlayerColor(input[2]);
+                try {
+                    server.joinGame(request, authToken);
+                    System.out.println("joined game");
+                    printer.printGame();
+                } catch (ServerFacade.ResponseException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+
+            else if (Objects.equals(input[0], "observe") && input.length == 2) {
+                JoinGameRequest request = new JoinGameRequest();
+                request.setGameID(Integer.parseInt(input[1]));
+                try {
+                    server.joinGame(request, authToken);
+                    System.out.println("observing game");
+                } catch (ServerFacade.ResponseException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+
             else if (Objects.equals(input[0], "logout") && input.length == 1) {
                 try {
                     server.logout(authToken);
@@ -135,8 +157,12 @@ public class client {
                     ListGamesResponse response = server.listGames(request);
                     Collection<Game> games = response.getGames();
                     if (games != null) {
+                        int i = 1;
                         for (Game it : games) {
-                            System.out.println(it.getGameName() + " " + it.getGameID());
+                            System.out.println(i + "\n" + it.getGameName() + ", ID: " + it.getGameID());
+                            System.out.println("white: " + it.getWhiteUsername());
+                            System.out.println("black: " + it.getBlackUsername());
+                            ++i;
                         }
                     }
                 } catch (ServerFacade.ResponseException e) {
@@ -161,71 +187,15 @@ public class client {
             }
         }
     }
+    private static void observingClient() {
+
+    }
+    private static void playingClient() {
+
+    }
     private static String[] parseInput(String input) {
         String[] words = input.split("\\s+");
         return words;
     }
-
-//    //maybe switch some GameImpl to ChessGame?
-//    public static class GameImplAdapter extends TypeAdapter<GameImpl> {
-//
-//        @Override //making JSON
-//        public void write(JsonWriter jsonWriter, GameImpl gameimpl) throws IOException {
-//            //just use serialize method?
-//            String gamestring = gameimpl.serialize();
-//            jsonWriter.value(gamestring);
-//        }
-//
-//        @Override //making object JSON
-//        public GameImpl read(JsonReader reader) throws IOException {
-//            //turn jsonreader into a string, then just use deserialize method in GAMEDAO?
-//            if (reader.peek() == JsonToken.NULL) {
-//                reader.nextNull();
-//                return null;
-//            }
-//            String gamestring = reader.nextString(); //maybe nextstring?
-//            GameImpl gameimpl = new GameImpl();
-//            BoardImpl board = new BoardImpl();
-//
-//            if (gamestring.charAt(0) == 'W') {
-//                gameimpl.setTeamTurn(ChessGame.TeamColor.WHITE);
-//            } else {gameimpl.setTeamTurn(ChessGame.TeamColor.BLACK);}
-//
-//            for (int i=1; i<gamestring.length(); ++i) {
-//                PositionImpl position = new PositionImpl();
-//                position.setRow(gamestring.charAt(i)-48); ++i;
-//                position.setColumn(gamestring.charAt(i)-48); ++i;
-//                ChessPiece piece = null;
-//                if (gamestring.charAt(i) == 'K') {
-//                    piece = new KingImpl(ChessGame.TeamColor.WHITE);
-//                } else if (gamestring.charAt(i) == 'Q') {
-//                    piece = new QueenImpl(ChessGame.TeamColor.WHITE);
-//                } else if (gamestring.charAt(i) == 'B') {
-//                    piece = new BishopImpl(ChessGame.TeamColor.WHITE);
-//                } else if (gamestring.charAt(i) == 'N') {
-//                    piece = new KnightImpl(ChessGame.TeamColor.WHITE);
-//                } else if (gamestring.charAt(i) == 'R') {
-//                    piece = new RookImpl(ChessGame.TeamColor.WHITE);
-//                } else if (gamestring.charAt(i) == 'P') {
-//                    piece = new PawnImpl(ChessGame.TeamColor.WHITE);
-//                } else if (gamestring.charAt(i) == 'k') {
-//                    piece = new KingImpl(ChessGame.TeamColor.BLACK);
-//                } else if (gamestring.charAt(i) == 'q') {
-//                    piece = new QueenImpl(ChessGame.TeamColor.BLACK);
-//                } else if (gamestring.charAt(i) == 'b') {
-//                    piece = new BishopImpl(ChessGame.TeamColor.BLACK);
-//                } else if (gamestring.charAt(i) == 'n') {
-//                    piece = new KnightImpl(ChessGame.TeamColor.BLACK);
-//                } else if (gamestring.charAt(i) == 'r') {
-//                    piece = new RookImpl(ChessGame.TeamColor.BLACK);
-//                } else if (gamestring.charAt(i) == 'p') {
-//                    piece = new PawnImpl(ChessGame.TeamColor.BLACK);
-//                }
-//                board.addPiece(position,piece);
-//            }
-//            gameimpl.setBoard(board);
-//            return gameimpl;
-//        }
-//    }
 
 }

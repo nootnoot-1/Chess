@@ -39,6 +39,11 @@ public class ServerFacade {
         return this.makeRequest("GET", "/game", request, ListGamesResponse.class , request.getAuthToken());
     }
 
+    public JoinGameResponse joinGame(JoinGameRequest request, String authToken)throws ResponseException {
+        //maybe need to add authToken to joinGameRequest?
+        return this.makeRequest("PUT", "/game", request, JoinGameResponse.class, authToken);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
