@@ -200,10 +200,11 @@ public class GameDAO {
                     throw new DataAccessException(e.getMessage());
                 }
             } else {
-                db.returnConnection(conn);
-                throw new DataAccessException("Error: already taken");
+                    db.returnConnection(conn);
+                    throw new DataAccessException("Error: already taken");
             }
         }
+
 
 
 //        Game game = Find(gameID);
@@ -220,6 +221,36 @@ public class GameDAO {
 //            }
 //            game.setWhiteUsername(username);
 //        }
+    }
+
+    public void LeaveSpot(int gameID, ChessGame.TeamColor color) throws DataAccessException //TODO what data type for color?
+    {
+        Find(gameID);
+        var conn = db.getConnection();
+
+        if (color == ChessGame.TeamColor.WHITE) {
+            try (var preparedStatement = conn.prepareStatement("UPDATE game SET whiteusername=NULL WHERE gameID=?")) {
+                preparedStatement.setInt(1,gameID);
+
+                preparedStatement.executeUpdate();
+
+                db.returnConnection(conn);
+            } catch (SQLException e) {
+                db.returnConnection(conn);
+                throw new DataAccessException(e.getMessage());
+            }
+        } else {
+            try (var preparedStatement = conn.prepareStatement("UPDATE game SET blackusername=NULL WHERE gameID=?")) {
+                preparedStatement.setInt(1,gameID);
+
+                preparedStatement.executeUpdate();
+
+                db.returnConnection(conn);
+            } catch (SQLException e) {
+                db.returnConnection(conn);
+                throw new DataAccessException(e.getMessage());
+            }
+        }
     }
 
     public void UpdateGame(int gameID, Game game) throws DataAccessException //TODO what is a new chessGame string?

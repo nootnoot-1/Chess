@@ -37,16 +37,24 @@ public class WebSocket extends Endpoint{
     }
 
     private static void gameViewClient(WebSocket ws, Scanner scanner, String authToken, int gameID) throws Exception {
-        UserGameCommand command = new UserGameCommand(authToken, gameID, UserGameCommand.CommandType.JOIN_PLAYER);
-        command.setPlayerColor(teamColor);
-        String json = new Gson().toJson(command);
-        ws.send(json);
+        UserGameCommand tempcommand = new UserGameCommand(authToken, gameID, UserGameCommand.CommandType.JOIN_PLAYER);
+        tempcommand.setPlayerColor(teamColor);
+        String tempjson = new Gson().toJson(tempcommand);
+        ws.send(tempjson);
+        boolean flag = false;
         while (true) { // this is where we do the work?
-            System.out.print("[GAMIN] >>> ");
+            if (flag) {
+                System.out.print("[GAMEVIEW] >>> ");
+            }
+            flag = true;
             String temp = scanner.nextLine();
             String[] input = parseInput(temp);
 
             if (Objects.equals(input[0], "leave") && input.length == 1) {
+                UserGameCommand command = new UserGameCommand(authToken, gameID, UserGameCommand.CommandType.LEAVE);
+                command.setPlayerColor(teamColor);
+                String json = new Gson().toJson(command);
+                ws.send(json);
                 return;
             }
 
@@ -58,14 +66,20 @@ public class WebSocket extends Endpoint{
                 System.out.println("resign - from game");
                 System.out.println("help - with possible commands");
             }
+            else if (Objects.equals(input[0], "redraw") && input.length == 1) {
+                ws.send(tempjson);
+                flag = false;
+            } else {
+                System.out.println("invalid input, type \"help\" for what you can do <3");
+            }
             //ws.send(scanner.nextLine());
         }
     }
 
     private static void observeClient(WebSocket ws, Scanner scanner, String authToken, int gameID) throws Exception {
-        UserGameCommand command = new UserGameCommand(authToken, gameID, UserGameCommand.CommandType.JOIN_OBSERVER);
-        String json = new Gson().toJson(command);
-        ws.send(json);
+        UserGameCommand tempcommand = new UserGameCommand(authToken, gameID, UserGameCommand.CommandType.JOIN_OBSERVER);
+        String tempjson = new Gson().toJson(tempcommand);
+        ws.send(tempjson);
         boolean flag = false;
         while (true) { // this is where we do the work?
             if (flag) {
@@ -76,6 +90,10 @@ public class WebSocket extends Endpoint{
             String[] input = parseInput(temp);
 
             if (Objects.equals(input[0], "leave") && input.length == 1) {
+                UserGameCommand command = new UserGameCommand(authToken, gameID, UserGameCommand.CommandType.LEAVE);
+                command.setPlayerColor(teamColor);
+                String json = new Gson().toJson(command);
+                ws.send(json);
                 return;
             }
 
@@ -84,7 +102,7 @@ public class WebSocket extends Endpoint{
                 System.out.println("leave - game view");
                 System.out.println("help - with possible commands");
             } else if (Objects.equals(input[0], "redraw") && input.length == 1) {
-                ws.send(json);
+                ws.send(tempjson);
                 flag = false;
             }
 
